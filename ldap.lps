@@ -9,8 +9,8 @@
         <Filename Value="ldap.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="13"/>
-        <CursorPos X="3" Y="21"/>
+        <TopLine Value="53"/>
+        <CursorPos X="44" Y="73"/>
         <UsageCount Value="75"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -19,8 +19,8 @@
         <Filename Value="ldaputils.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="149"/>
-        <CursorPos Y="156"/>
+        <TopLine Value="81"/>
+        <CursorPos X="38" Y="98"/>
         <UsageCount Value="75"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -29,8 +29,8 @@
         <Filename Value="Cert.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="330"/>
-        <CursorPos X="57" Y="7"/>
+        <TopLine Value="25"/>
+        <CursorPos X="19" Y="39"/>
         <UsageCount Value="70"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -48,7 +48,7 @@
         <Filename Value="..\jwa2.3\jwa\branches\2.3\Win32API\JwaWinLDAP.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="58" Y="4"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit4>
       <Unit5>
@@ -56,7 +56,7 @@
         <EditorIndex Value="4"/>
         <TopLine Value="93"/>
         <CursorPos X="10" Y="105"/>
-        <UsageCount Value="34"/>
+        <UsageCount Value="35"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
@@ -65,7 +65,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="14"/>
         <CursorPos X="42" Y="29"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit6>
       <Unit7>
@@ -73,7 +73,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="16"/>
         <CursorPos X="35" Y="30"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit7>
       <Unit8>
@@ -81,7 +81,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="14"/>
         <CursorPos X="15" Y="26"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
@@ -90,14 +90,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="22"/>
         <CursorPos X="18" Y="40"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\FPC\3.0.0\source\rtl\inc\systemh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="684"/>
         <CursorPos X="5" Y="696"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit10>
       <Unit11>
         <Filename Value="Wcrypt2.pas"/>
@@ -105,7 +105,7 @@
         <EditorIndex Value="3"/>
         <TopLine Value="336"/>
         <CursorPos X="47" Y="348"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="14"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit11>
@@ -118,135 +118,124 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="122" TopLine="110"/>
+        <Caret Line="126" TopLine="110"/>
       </Position1>
       <Position2>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="123" TopLine="110"/>
+        <Caret Line="127" TopLine="110"/>
       </Position2>
       <Position3>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="125" TopLine="110"/>
+        <Caret Line="129" TopLine="110"/>
       </Position3>
       <Position4>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="126" TopLine="110"/>
+        <Caret Line="130" TopLine="110"/>
       </Position4>
       <Position5>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="127" TopLine="110"/>
+        <Caret Line="131" TopLine="123"/>
       </Position5>
       <Position6>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="129" TopLine="110"/>
+        <Caret Line="132" TopLine="123"/>
       </Position6>
       <Position7>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="130" TopLine="110"/>
+        <Caret Line="134" TopLine="123"/>
       </Position7>
       <Position8>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="131" TopLine="123"/>
+        <Caret Line="135" TopLine="123"/>
       </Position8>
       <Position9>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="132" TopLine="123"/>
+        <Caret Line="142" TopLine="123"/>
       </Position9>
       <Position10>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="134" TopLine="123"/>
+        <Caret Line="143" TopLine="123"/>
       </Position10>
       <Position11>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="135" TopLine="123"/>
+        <Caret Line="199" Column="36" TopLine="186"/>
       </Position11>
       <Position12>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="142" TopLine="123"/>
+        <Caret Line="135" Column="68" TopLine="123"/>
       </Position12>
       <Position13>
-        <Filename Value="ldaputils.pas"/>
-        <Caret Line="143" TopLine="123"/>
+        <Filename Value="WinLDAP.pas"/>
+        <Caret Line="1853" Column="10" TopLine="1841"/>
       </Position13>
       <Position14>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="199" Column="36" TopLine="186"/>
+        <Caret Line="137" Column="32" TopLine="117"/>
       </Position14>
       <Position15>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="135" Column="68" TopLine="123"/>
+        <Caret Line="135" Column="9" TopLine="122"/>
       </Position15>
       <Position16>
-        <Filename Value="WinLDAP.pas"/>
-        <Caret Line="1853" Column="10" TopLine="1841"/>
+        <Filename Value="ldaputils.pas"/>
+        <Caret Line="17" Column="24"/>
       </Position16>
       <Position17>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="137" Column="32" TopLine="117"/>
+        <Caret Line="137" Column="16" TopLine="125"/>
       </Position17>
       <Position18>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="135" Column="9" TopLine="122"/>
+        <Caret Line="140" Column="85" TopLine="129"/>
       </Position18>
       <Position19>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="17" Column="24"/>
+        <Caret Line="141" Column="40" TopLine="126"/>
       </Position19>
       <Position20>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="137" Column="16" TopLine="125"/>
+        <Caret Line="124" Column="4"/>
       </Position20>
       <Position21>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="140" Column="85" TopLine="129"/>
+        <Caret Line="8" Column="50"/>
       </Position21>
       <Position22>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="141" Column="40" TopLine="126"/>
+        <Caret Line="140" Column="22"/>
       </Position22>
       <Position23>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="124" Column="4"/>
+        <Caret Line="8" Column="41"/>
       </Position23>
       <Position24>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="8" Column="50"/>
+        <Caret Line="114" Column="5" TopLine="91"/>
       </Position24>
       <Position25>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="140" Column="22"/>
+        <Caret Line="155" Column="50" TopLine="135"/>
       </Position25>
       <Position26>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="8" Column="41"/>
+        <Caret Line="160" TopLine="143"/>
       </Position26>
       <Position27>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="114" Column="5" TopLine="91"/>
+        <Caret Line="158" Column="69" TopLine="147"/>
       </Position27>
       <Position28>
-        <Filename Value="ldaputils.pas"/>
-        <Caret Line="155" Column="50" TopLine="135"/>
+        <Filename Value="ldap.lpr"/>
+        <Caret Line="30" Column="23" TopLine="74"/>
       </Position28>
       <Position29>
-        <Filename Value="ldaputils.pas"/>
-        <Caret Line="160" TopLine="143"/>
+        <Filename Value="ldap.lpr"/>
+        <Caret Line="71" Column="39" TopLine="56"/>
       </Position29>
       <Position30>
         <Filename Value="ldaputils.pas"/>
-        <Caret Line="158" Column="69" TopLine="147"/>
+        <Caret Line="20" Column="42" TopLine="8"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
-  <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="ldap.lpr"/>
-        <Line Value="70"/>
-      </Item1>
-    </BreakPoints>
-  </Debugging>
 </CONFIG>

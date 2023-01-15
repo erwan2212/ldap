@@ -17,7 +17,7 @@ ldapDebug:boolean=false;
 ldapattr:widestring='';
 
 function Enumerate(const ABase: widestring; const AFilter: widestring; AComputerList: TStrings; ACNOnly: Boolean = False): Boolean;
-function BindWinNTAuth(const Domain: string; const User: string; const Password: string): Boolean;
+function BindWinNTAuth(const Domain: widestring; const User: widestring; const Password: widestring): Boolean;
 function SimpleBind(const DNName: widestring; const Password: widestring): Boolean;
 function EnumerateUsers(const ABase: widestring; AComputerList: TStrings; ACNOnly: Boolean = False): Boolean;
 function Connect(): Boolean;
@@ -63,7 +63,7 @@ else
 end;
 
 
-function BindWinNTAuth(const Domain: string; const User: string; const Password: string): Boolean;
+function BindWinNTAuth(const Domain: widestring; const User: widestring; const Password: widestring): Boolean;
 const
 SEC_WINNT_AUTH_IDENTITY_ANSI    = 1;
 SEC_WINNT_AUTH_IDENTITY_UNICODE = 2;

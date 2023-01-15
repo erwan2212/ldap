@@ -38,9 +38,11 @@ procedure DisplayCertContext(CertContext: PCCERT_CONTEXT);
 var
   CertName: array[0..255] of Char;
 begin
+  {
   if CertGetNameString(CertContext, CERT_NAME_EMAIL_TYPE, 0, nil,
     CertName, 256) = 0 then RaiseLastWin32Error;
   Writeln('Subject CERT_NAME_EMAIL_TYPE: ', CertName);
+  }
   if CertGetNameString(CertContext, CERT_NAME_RDN_TYPE, 0, nil,
     CertName, 256) = 0 then RaiseLastWin32Error;
   Writeln('Subject CERT_NAME_RDN_TYPE: ', CertName);
@@ -52,9 +54,11 @@ begin
     CertName, 256) = 0 then RaiseLastWin32Error;
   Writeln('Subject CERT_NAME_FRIENDLY_DISPLAY_TYPE: ', CertName);
   }
+  {
   if CertGetNameString(CertContext, CERT_NAME_EMAIL_TYPE, CERT_NAME_ISSUER_FLAG, nil,
     CertName, 256) = 0 then RaiseLastWin32Error;
   Writeln('Issuer CERT_NAME_EMAIL_TYPE: ', CertName);
+  }
   if CertGetNameString(CertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, CERT_NAME_ISSUER_FLAG, nil,
     CertName, 256) = 0 then RaiseLastWin32Error;
   Writeln('Issuer CERT_NAME_SIMPLE_DISPLAY_TYPE: ', CertName);

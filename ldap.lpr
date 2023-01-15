@@ -24,11 +24,13 @@ begin
   //
   cmd := TCommandLineReader.create;
   cmd.declareString('connect', 'ldap://WIN-BBC4BS466Q5.home.lab:389/dc=home,dc=lab');
-  cmd.declareString('user', 'cn=admin,cn=users,cn=home,cn=lab');
+  cmd.declareString('domain', 'home.lab|empty');
+  cmd.declareString('user', 'cn=admin,cn=users,cn=home,cn=lab|administrator');
   cmd.declarestring('password', 'password');
   cmd.declarestring('query', '(&(objectClass=user)(mail=user1@home.lab))');
-  cmd.declarestring('certenum', 'blah');
+  cmd.declarestring('certenum', 'MY|ROOT');
   cmd.declarestring('attr', 'samaccountname');
+  cmd.declarestring('mode', 'simple|winnt','simple');
   cmd.declareint('debug', '1',0);
 
   cmd.parse(cmdline);
@@ -45,9 +47,9 @@ begin
   //
         if cmd.readInt ('debug')=1 then ldapDebug :=true;
         // Connexion au serveur LDAP pour la récupération des adresses mail
-        Host := uri.Host; //'192.168.1.121';
-        //domain:='home.lab';
-        base:=uri.document;//'(objectClass=user)'; //"(&(objectClass=user)(mail=user1@home.lab))"
+        Host := uri.Host;
+        domain:=cmd.readString('domain');
+        base:=uri.document;
         port:=uri.Port; //389;  //636
 
         User := cmd.readString('user'); //'CN=Administrator,CN=Users,DC=home,DC=lab';
@@ -61,15 +63,24 @@ begin
           writeln('host:'+Host );
           writeln('port:'+inttostr(Port)  );
           writeln('base:'+base   );
+          writeln('domain:'+domain  );
           writeln('user:'+user  );
           writeln('password:'+password   );
           writeln('filter:'+filter   );
   //
         try
           try
-          if not SimpleBind(User, Password) then
-          //if not BindWinNTAuth (domain,'administrator','Password1310') then
-            raise Exception.Create('Impossible de se faire reconnaître par le serveur LDAP');
+          if cmd.readString('mode')='simple' then
+          begin
+              if not SimpleBind(User, Password) then
+              raise Exception.Create('Impossible de se faire reconnaître par le serveur LDAP');
+          end;
+          if cmd.readString('mode')='winnt' then
+          begin
+              if not BindWinNTAuth (domain,user,password) then
+              raise Exception.Create('Impossible de se faire reconnaître par le serveur LDAP');
+          end;
+
 
           items:=TStringlist.Create ;
         //if EnumerateUsers ('CN=Users,DC=home,DC=lab',items,false) then
