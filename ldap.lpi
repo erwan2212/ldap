@@ -24,7 +24,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="192.168.1.121 CN=Administrator,CN=Users,DC=home,DC=lab Password1310 DC=home,DC=lab &quot;(&amp;(objectClass=user)(mail=user1@home.lab))&quot;"/>
+        <CommandLineParams Value="--connect=&quot;ldap://WIN-BBC4BS466Q5.home.lab:636/dc=home,dc=lab&quot; --user=&quot;CN=Administrator,CN=Users,DC=home,DC=lab&quot; --password=&quot;Password1310&quot; --query=&quot;(&amp;(objectClass=user)(mail=user1@home.lab))&quot;"/>
       </local>
     </RunParams>
     <Units Count="4">

@@ -13,6 +13,13 @@ var
   URI: TURI;
   cmd: TCommandLineReader;
 
+//ldap.exe
+//--connect="ldap://WIN-BBC4BS466Q5.home.lab:636/dc=home,dc=lab"
+//--user="CN=Administrator,CN=Users,DC=home,DC=lab"
+//--password="Password1234"
+//--query="(&(objectClass=user)(mail=user1@home.lab))"
+//--attr="mail,displayname,cn,distinguishedname"
+
 begin
   //
   cmd := TCommandLineReader.create;
@@ -21,6 +28,7 @@ begin
   cmd.declarestring('password', 'password');
   cmd.declarestring('query', '(&(objectClass=user)(mail=user1@home.lab))');
   cmd.declarestring('certenum', 'blah');
+  cmd.declarestring('attr', 'samaccountname');
   cmd.declareint('debug', '1',0);
 
   cmd.parse(cmdline);
@@ -46,6 +54,7 @@ begin
         Password := cmd.readString('password'); //'passwordxxxx';
         filter:=cmd.readString('query');//'DC=home,DC=lab';
 
+        ldapattr :=widestring(cmd.readString('attr'));
         if port=636 then ldapSSL :=true;
   //
           writeln('protocol:'+uri.Protocol );
@@ -67,6 +76,7 @@ begin
         //if EnumerateUsers ('DC=home,DC=lab',items,false) then
         if enumerate(base,filter,items,false) then
            begin
+           if ldapattr <>'' then writeln(ldapattr);;
            for i:=0 to items.Count-1  do writeln(items.Strings [i])
 
            end

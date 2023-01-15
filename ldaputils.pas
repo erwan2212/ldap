@@ -14,6 +14,7 @@ port:ulong;
 ldapSSL:boolean=false;
 ldapTLS:boolean=false;
 ldapDebug:boolean=false;
+ldapattr:widestring='';
 
 function Enumerate(const ABase: widestring; const AFilter: widestring; AComputerList: TStrings; ACNOnly: Boolean = False): Boolean;
 function BindWinNTAuth(const Domain: string; const User: string; const Password: string): Boolean;
@@ -104,6 +105,14 @@ begin
 end;
 end;
 
+procedure Split(const Delimiter: Char; Input: string; const Strings: TStrings);
+begin
+   Assert(Assigned(Strings)) ;
+   Strings.Clear;
+   Strings.Delimiter := Delimiter;
+   Strings.DelimitedText := Input;
+end;
+
 function Enumerate(const ABase: widestring; const AFilter: widestring; AComputerList: TStrings; ACNOnly: Boolean = False): Boolean;
 
 function CreateDNParser(): TStringList;
@@ -119,6 +128,10 @@ LDAPMessages, LDAPEntry: PLDAPMessage;
 CN: string;
 DN:pwidechar;
 DNParser: TStringList;
+value:PPCharW;
+s:tstrings;
+i:byte;
+item:string;
 begin
 Result := False;
 
@@ -131,15 +144,35 @@ try
       LDAPEntry := ldap_first_entry(FConnection, LDAPMessages);
       while Assigned(LDAPEntry) do
       begin
-        DN := ldap_get_dnW(FConnection, LDAPEntry);
+        dn:=nil;
+        if ldapattr<>''
+           then
+             begin
+               s:=tstringlist.create;
+               split(',',string(ldapattr ),s);
+               item:='';
+               for i:=0 to s.Count -1 do
+                   begin
+                   value:=ldap_get_valuesW(FConnection ,LDAPEntry ,pwidechar(widestring(s[i])));
+                   if value<>nil
+                      then item:=item+','+strpas(value^)
+                      else item:=item+','+'';
+                   end;
+                   delete(item,1,1);
+             end
+           else
+           begin
+           DN := ldap_get_dnW(FConnection, LDAPEntry);
+           item:=string(strpas(dn));
+           end;
         if ACNOnly then
         begin
-          DNParser.CommaText := strpas(DN);
+          DNParser.CommaText := item; //strpas(DN);
           CN := DNParser.Values['CN'];
           AComputerList.Add(CN);
         end
         else
-          AComputerList.Add(strpas(DN));
+        AComputerList.Add(item);
         LDAPEntry := ldap_next_entry(FConnection, LDAPEntry);
       end;
     finally
