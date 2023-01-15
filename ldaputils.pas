@@ -309,8 +309,8 @@ begin
          CertServerName:=host;
          ldapcheck(ldap_set_option(FConnection, LDAP_OPT_SERVER_CERTIFICATE, @VerifyCert),true);
        end;
-    //if ldapTLS
-    //   then ErrorCode:=ldap_start_tls_s(FConnection, nil, nil, nil, nil);
+    if ldapTLS
+       then ldapcheck(ldap_start_tls_s(FConnection, nil, nil, nil, nil));
     ErrorCode := ldap_simple_bind_sW(FConnection, PWideChar(DNName), PWideChar(Password));
     Result := ErrorCode = LDAP_SUCCESS;
     //writeln(LDAPErrorCodeToMessage(ErrorCode));

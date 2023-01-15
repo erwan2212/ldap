@@ -58,6 +58,7 @@ begin
 
         ldapattr :=widestring(cmd.readString('attr'));
         if port=636 then ldapSSL :=true;
+        if (uri.Protocol='ldaps') and (port=389) then ldapTLS :=true;
   //
           writeln('protocol:'+uri.Protocol );
           writeln('host:'+Host );
