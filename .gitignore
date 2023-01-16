@@ -1,4 +1,7 @@
 *.pfx
-backup\*
-lib\*
 *.bak
+*.ppu
+*.o
+backup
+lib
+

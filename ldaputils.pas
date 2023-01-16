@@ -23,6 +23,8 @@ function EnumerateUsers(const ABase: widestring; AComputerList: TStrings; ACNOnl
 function Connect(): Boolean;
 function Disconnect(): Boolean;
 
+function LDAPErrorCodeToMessage(err: Cardinal): string;
+
 implementation
 
 type
@@ -180,7 +182,8 @@ try
     end;
 
     Result := AComputerList.Count > 0;
-  end;
+  end
+  else writeln('ldap_search_sW failed:'+LDAPErrorCodeToMessage(LdapGetLastError()));
 finally
   if Assigned(LDAPMessages) then
     ldap_msgfree(LDAPMessages);
@@ -318,7 +321,8 @@ begin
     if not Result then
       OutputDebugLDAP(LDAPErrorCodeToMessage(ErrorCode));
     {$ENDIF DEBUG_SLT_LDAP}
-  end;
+  end
+  else writeln('cannot connect:'+LDAPErrorCodeToMessage(LdapGetLastError()));
 end;
 end;
 

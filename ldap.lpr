@@ -1,7 +1,7 @@
 program ldap;
 
 uses windows,sysutils,classes, ldaputils,uriparser,
-  rcmdline in '..\rcmdline-master\rcmdline.pas',cert;
+  rcmdline in '..\rcmdline-master\rcmdline.pas',cert,winldap;
 
 
 
@@ -74,12 +74,12 @@ begin
           if cmd.readString('mode')='simple' then
           begin
               if not SimpleBind(User, Password) then
-              raise Exception.Create('Impossible de se faire reconnaître par le serveur LDAP');
+              raise Exception.Create('simplebind failed:'+LDAPErrorCodeToMessage(LdapGetLastError()));
           end;
           if cmd.readString('mode')='winnt' then
           begin
               if not BindWinNTAuth (domain,user,password) then
-              raise Exception.Create('Impossible de se faire reconnaître par le serveur LDAP');
+              raise Exception.Create('simplebind failed:'+LDAPErrorCodeToMessage(LdapGetLastError()));
           end;
 
 
