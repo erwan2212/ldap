@@ -296,6 +296,7 @@ function SimpleBind(const DNName: widestring; const Password: widestring): Boole
 var
 ErrorCode: ULONG;
 version:nativeuint=3;
+LDAP_OPT_OFF:nativeuint=0;
 //VerifyCert:nativeuint=0;
 begin
 certdebug:=ldapDebug ;
@@ -305,7 +306,7 @@ begin
   if Connect() then
   begin
 
-    ldapcheck(ldap_set_option(FConnection, LDAP_OPT_REFERRALS, nil),true);
+    ldapcheck(ldap_set_option(FConnection, LDAP_OPT_REFERRALS, @LDAP_OPT_OFF),true);
     ldapcheck(ldap_set_option(FConnection, LDAP_OPT_PROTOCOL_VERSION, @version),true); //to be able to deep search...
     if ldapSSL or ldapTLS then
        begin
