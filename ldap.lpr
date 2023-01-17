@@ -32,6 +32,7 @@ begin
   cmd.declarestring('attr', 'samaccountname');
   cmd.declarestring('mode', 'simple|winnt','simple');
   cmd.declareint('debug', '1',0);
+  cmd.declareint('opt_referrals', '0',0);
 
   cmd.parse(cmdline);
   //writeln(booltostr(cmd.existsProperty('user')));
@@ -46,6 +47,7 @@ begin
   begin
   //
         if cmd.readInt ('debug')=1 then ldapDebug :=true;
+        if cmd.readInt ('opt_referrals')=1 then ldapReferrals :=true;
         // Connexion au serveur LDAP pour la récupération des adresses mail
         Host := uri.Host;
         domain:=cmd.readString('domain');

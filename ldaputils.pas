@@ -14,7 +14,8 @@ port:ulong;
 ldapSSL:boolean=false;
 ldapTLS:boolean=false;
 ldapDebug:boolean=false;
-ldapattr:widestring='';
+ldapAttr:widestring='';
+ldapReferrals:boolean=false;
 
 function Enumerate(const ABase: widestring; const AFilter: widestring; AComputerList: TStrings; ACNOnly: Boolean = False): Boolean;
 function BindWinNTAuth(const Domain: widestring; const User: widestring; const Password: widestring): Boolean;
@@ -297,6 +298,7 @@ var
 ErrorCode: ULONG;
 version:nativeuint=3;
 LDAP_OPT_OFF:nativeuint=0;
+LDAP_OPT_ON:nativeuint=1;
 //VerifyCert:nativeuint=0;
 begin
 certdebug:=ldapDebug ;
@@ -305,8 +307,10 @@ if (DNName <> '') and (Password <> '') then
 begin
   if Connect() then
   begin
-
-    ldapcheck(ldap_set_option(FConnection, LDAP_OPT_REFERRALS, @LDAP_OPT_OFF),true);
+    //defines how the client library should handle Referrals returned by the server
+    if ldapReferrals=false
+       then ldapcheck(ldap_set_option(FConnection, LDAP_OPT_REFERRALS, @LDAP_OPT_OFF),true)
+       else ldapcheck(ldap_set_option(FConnection, LDAP_OPT_REFERRALS, @LDAP_OPT_ON),true);
     ldapcheck(ldap_set_option(FConnection, LDAP_OPT_PROTOCOL_VERSION, @version),true); //to be able to deep search...
     if ldapSSL or ldapTLS then
        begin
