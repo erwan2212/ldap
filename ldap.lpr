@@ -84,7 +84,7 @@ begin
           if cmd.readString('mode')='winnt' then
           begin
               if not BindWinNTAuth (domain,user,password) then
-              raise Exception.Create('simplebind failed:'+LDAPErrorCodeToMessage(LdapGetLastError()));
+              raise Exception.Create('BindWinNTAuth failed:'+LDAPErrorCodeToMessage(LdapGetLastError()));
           end;
 
 

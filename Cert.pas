@@ -357,7 +357,7 @@ begin
       CertUserAbort := true;
     uiDlg.Free;
     }
-    writeln('warning:CERT_STORE_CERTIFICATE_CONTEXT');
+    writeln('VerifyCert:'+errStr);
   end;
   CertCloseStore(collect, 0);
   CertFreeCertificateContext(pSub);
