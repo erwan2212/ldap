@@ -28,6 +28,8 @@ function LDAPErrorCodeToMessage(err: Cardinal): string;
 
 implementation
 
+const LDAP_OPT_DEBUG_LEVEL = $5001;
+
 type
      TEnumeratedValueItem = record
        DN: string;
@@ -37,6 +39,42 @@ type
        end;
      end;
      TEnumeratedValues = array of TEnumeratedValueItem;
+
+     function LDAPErrorCodeToMessage(err: Cardinal): string;
+     var
+     errstring: PWideChar;
+     begin
+     errstring := ldap_err2stringW(err);
+     Result := errstring;
+     end;
+
+     procedure LDAPCheck(const err: ULONG; const Critical: Boolean = true);
+     const
+     stLdapError       = 'LDAP error: %s!';
+     stLdapErrorEx     = 'LDAP error! %s: %s.';
+     var
+       ErrorEx: PChar;
+       msg: string;
+       c: ULONG;
+     begin
+       if (err = LDAP_SUCCESS) then exit;
+
+       if ((ldap_get_option(FConnection , LDAP_OPT_SERVER_ERROR, @ErrorEx)=LDAP_SUCCESS) and Assigned(ErrorEx)) then
+       begin
+         msg := Format(stLdapErrorEx, [ldap_err2string(err), ErrorEx]);
+         ldap_memfree(ErrorEx);
+       end
+       else
+         msg := Format(stLdapError, [ldap_err2string(err)]);
+
+       c := 0;
+       if (ldap_get_option(FConnection, LDAP_OPT_SERVER_EXT_ERROR, @c) = LDAP_SUCCESS) then
+         msg := msg + #10 + SysErrorMessage(c);
+
+       if Critical then
+         raise exception.Create(msg);
+       //MessageDlg(msg, mtError, [mbOk], 0);
+     end;
 
 function Disconnect(): Boolean;
 begin
@@ -83,10 +121,13 @@ end;
 var
 WinNTAuth: SEC_WINNT_AUTH_IDENTITY_W;
 ErrorCode: ULONG;
+version:nativeuint=3;
+LDAP_OPT_OFF:nativeuint=0;
+LDAP_OPT_ON:nativeuint=1;
 begin
 Result := False;
-if (User <> '') and (Password <> '') then
-begin
+//if (User = '') and (Password <> '') then
+//begin
   if Connect() then
   begin
     ZeroMemory(@WinNTAuth, SizeOf(WinNTAuth));
@@ -98,14 +139,29 @@ begin
     WinNTAuth.PasswordLength := Length(Password);
     WinNTAuth.Flags := SEC_WINNT_AUTH_IDENTITY_UNICODE;
 
+    //ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
+    //defines how the client library should handle Referrals returned by the server
+    if ldapReferrals=false
+       then ldapcheck(ldap_set_option(FConnection, LDAP_OPT_REFERRALS, @LDAP_OPT_OFF),true)
+       else ldapcheck(ldap_set_option(FConnection, LDAP_OPT_REFERRALS, @LDAP_OPT_ON),true);
+    ldapcheck(ldap_set_option(FConnection, LDAP_OPT_PROTOCOL_VERSION, @version),true); //to be able to deep search...
+    if ldapSSL or ldapTLS then
+       begin
+         CertServerName:=host;
+         ldapcheck(ldap_set_option(FConnection, LDAP_OPT_SERVER_CERTIFICATE, @VerifyCert),true);
+       end;
+    if ldapTLS
+       then ldapcheck(ldap_start_tls_s(FConnection, nil, nil, nil, nil));
+
     ErrorCode := ldap_bind_sW(FConnection, nil, PWideChar(@WinNTAuth), LDAP_AUTH_NEGOTIATE);
     Result := ErrorCode = LDAP_SUCCESS;
     {$IFDEF DEBUG_SLT_LDAP}
     if not Result then
       OutputDebugLDAP(LDAPErrorCodeToMessage(ErrorCode));
     {$ENDIF DEBUG_SLT_LDAP}
-  end;
-end;
+  end
+  else writeln('cannot connect:'+LDAPErrorCodeToMessage(LdapGetLastError()));
+//end;
 end;
 
 procedure Split(const Delimiter: Char; Input: string; const Strings: TStrings);
@@ -257,41 +313,7 @@ finally
 end;
 end;
 
-function LDAPErrorCodeToMessage(err: Cardinal): string;
-var
-errstring: PWideChar;
-begin
-errstring := ldap_err2stringW(err);
-Result := errstring;
-end;
 
-procedure LDAPCheck(const err: ULONG; const Critical: Boolean = true);
-const
-stLdapError       = 'LDAP error: %s!';
-stLdapErrorEx     = 'LDAP error! %s: %s.';
-var
-  ErrorEx: PChar;
-  msg: string;
-  c: ULONG;
-begin
-  if (err = LDAP_SUCCESS) then exit;
-
-  if ((ldap_get_option(FConnection , LDAP_OPT_SERVER_ERROR, @ErrorEx)=LDAP_SUCCESS) and Assigned(ErrorEx)) then
-  begin
-    msg := Format(stLdapErrorEx, [ldap_err2string(err), ErrorEx]);
-    ldap_memfree(ErrorEx);
-  end
-  else
-    msg := Format(stLdapError, [ldap_err2string(err)]);
-
-  c := 0;
-  if (ldap_get_option(FConnection, LDAP_OPT_SERVER_EXT_ERROR, @c) = LDAP_SUCCESS) then
-    msg := msg + #10 + SysErrorMessage(c);
-
-  if Critical then
-    raise exception.Create(msg);
-  //MessageDlg(msg, mtError, [mbOk], 0);
-end;
 
 function SimpleBind(const DNName: widestring; const Password: widestring): Boolean;
 var
@@ -307,6 +329,7 @@ if (DNName <> '') and (Password <> '') then
 begin
   if Connect() then
   begin
+    //ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
     //defines how the client library should handle Referrals returned by the server
     if ldapReferrals=false
        then ldapcheck(ldap_set_option(FConnection, LDAP_OPT_REFERRALS, @LDAP_OPT_OFF),true)

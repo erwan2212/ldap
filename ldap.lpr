@@ -62,6 +62,8 @@ begin
         if port=636 then ldapSSL :=true;
         if (uri.Protocol='ldaps') and (port=389) then ldapTLS :=true;
   //
+  if ldapDebug=true then
+     begin
           writeln('protocol:'+uri.Protocol );
           writeln('host:'+Host );
           writeln('port:'+inttostr(Port)  );
@@ -70,6 +72,7 @@ begin
           writeln('user:'+user  );
           writeln('password:'+password   );
           writeln('filter:'+filter   );
+     end;
   //
         try
           try
