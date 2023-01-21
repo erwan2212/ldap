@@ -43,9 +43,10 @@ begin
     CertName, 256) = 0 then RaiseLastWin32Error;
   Writeln('Subject CERT_NAME_EMAIL_TYPE: ', CertName);
   }
-  if CertGetNameString(CertContext, CERT_NAME_RDN_TYPE, 0, nil,
+  {if CertGetNameString(CertContext, CERT_NAME_RDN_TYPE, 0, nil,
     CertName, 256) = 0 then RaiseLastWin32Error;
   Writeln('Subject CERT_NAME_RDN_TYPE: ', CertName);
+  }
   if CertGetNameString(CertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, nil,
     CertName, 256) = 0 then RaiseLastWin32Error;
   Writeln('Subject CERT_NAME_SIMPLE_DISPLAY_TYPE: ', CertName);
@@ -67,9 +68,11 @@ begin
     CertName, 256) = 0 then RaiseLastWin32Error;
   Writeln('Issuer CERT_NAME_FRIENDLY_DISPLAY_TYPE: ', CertName);
   }
+  {
   if CertGetNameString(CertContext, CERT_NAME_ATTR_TYPE, 0, PAnsiChar(szOID_COMMON_NAME),
                        CertName, 256)=0 then RaiseLastWin32Error;
   Writeln('COMMON_NAME: ', CertName);
+  }
 end;
 
 

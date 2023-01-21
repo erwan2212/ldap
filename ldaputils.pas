@@ -125,6 +125,7 @@ version:nativeuint=3;
 LDAP_OPT_OFF:nativeuint=0;
 LDAP_OPT_ON:nativeuint=1;
 begin
+certdebug:=ldapDebug ;
 Result := False;
 //if (User = '') and (Password <> '') then
 //begin
