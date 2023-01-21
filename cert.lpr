@@ -98,6 +98,7 @@ function CertOpenStore(lpszStoreProvider: LPCSTR;
                               dwFlags: DWORD): BOOL; stdcall; external 'Crypt32.dll';
 var
   cmd: TCommandLineReader;
+  CERT_SYSTEM_STORE:dword=CERT_SYSTEM_STORE_CURRENT_USER;
 
  procedure EnumCertificates(storename:string);
  var
@@ -111,7 +112,22 @@ var
  begin
    try
 
-     hStore := CertOpenSystemStorew(0, pwidechar(widestring(StoreName)));
+     //hStore := CertOpenSystemStorew(0, pwidechar(widestring(StoreName)));
+
+
+  hStore := CertOpenStore(
+       CERT_STORE_PROV_SYSTEM_A,
+       0,                      // Encoding type not needed
+                               // with this PROV.
+       0,                   // Accept the default HCRYPTPROV.
+       CERT_SYSTEM_STORE,
+                               // Set the system store location in
+                               // the registry.
+       pchar(storename));                 // Could have used other predefined
+                               // system stores
+                               // including Trust, CA, or Root.
+
+
      if hStore = thandle(-1) then
        RaiseLastWin32Error;
      try
@@ -119,8 +135,10 @@ var
        while CertContext <> nil do
        begin
          writeln('*********************************************');
+         fillchar(data,sizeof(data),0);
          if CertGetNameStringA(CertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, nil,data, 512) <> 0
             then Writeln('SUBJECT_CERT_NAME: ', data);
+         fillchar(data,sizeof(data),0);
          if CertGetNameStringA(CertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, CERT_NAME_ISSUER_FLAG, nil,data, 512) <> 0
             then Writeln('ISSUER_CERT_NAME: ', data);
          //p:=getmem(CertContext.pCertInfo.Subject.cbData);
@@ -270,20 +288,27 @@ begin
   PFX.cbData := 0;
 
   // Open system certificate store
-  pStore := CertOpenSystemStoreW(0, pwidechar(store));
-  {
+  pStore:=thandle(-1);
+  //pStore := CertOpenSystemStoreW(0, pwidechar(store));
+
   pStore := CertOpenStore(
        CERT_STORE_PROV_SYSTEM,
        0,                      // Encoding type not needed
                                // with this PROV.
        0,                   // Accept the default HCRYPTPROV.
-       CERT_SYSTEM_STORE_CURRENT_USER,
+       CERT_SYSTEM_STORE,
                                // Set the system store location in
                                // the registry.
        pchar(store));                 // Could have used other predefined
                                // system stores
                                // including Trust, CA, or Root.
-  }
+
+ if pstore=thandle(-1) then
+   begin
+    writeln('CertOpenStore failed:'+inttostr(getlasterror));
+    exit;
+   end;
+
   // Open in-mem temporal certificate store
   pStoreTmp := CertOpenStore(CERT_STORE_PROV_MEMORY, 0, 0, 0, nil);
 
@@ -326,7 +351,7 @@ begin
 
     if pcert=nil then
      begin
-       writeln('CertFindCertificateInStore failed');
+       writeln('CertFindCertificateInStore failed:'+inttostr(getlasterror));
        exit;
      end;
 
@@ -431,8 +456,11 @@ begin
     cmd.declareString('store', 'MY');
     cmd.declareString('subject', '');
     cmd.declareString('hash', '');
+    cmd.declarestring('profile', 'user or machine','user' );
 
     cmd.parse(cmdline);
+
+    if cmd.readstring('profile')='machine' then CERT_SYSTEM_STORE:=CERT_SYSTEM_STORE_LOCAL_MACHINE;
  //
  if (cmd.existsProperty('export')) and (cmd.existsProperty('subject'))
     then if ExportCert(widestring(cmd.readstring('store')),cmd.readstring('subject'))=true
