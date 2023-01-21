@@ -4,11 +4,32 @@ uses windows,sysutils,schannel,
   rcmdline in '..\rcmdline-master\rcmdline.pas', advapi32;
 
 const
-  CERT_STORE_PROV_MEMORY = (LPCSTR(2));
+  //CERT_STORE_PROV_MEMORY = (LPCSTR(2));
   CERT_STORE_ADD_REPLACE_EXISTING                    = 3;
+  //
+  CERT_STORE_PROV_MSG                = 1;
+  CERT_STORE_PROV_MEMORY             = 2;
+  CERT_STORE_PROV_FILE               = 3;
+  CERT_STORE_PROV_REG                = 4;
+  CERT_STORE_PROV_PKCS7              = 5;
+  CERT_STORE_PROV_SERIALIZED         = 6;
+  CERT_STORE_PROV_FILENAME_A         = 7;
+  CERT_STORE_PROV_FILENAME_W         = 8;
+  CERT_STORE_PROV_FILENAME           = CERT_STORE_PROV_FILENAME_W;
   CERT_STORE_PROV_SYSTEM_A = (LPCSTR(9));
   CERT_STORE_PROV_SYSTEM_W =  (LPCSTR(10));
   CERT_STORE_PROV_SYSTEM = CERT_STORE_PROV_SYSTEM_W;
+  CERT_STORE_PROV_COLLECTION         = 11;
+  CERT_STORE_PROV_SYSTEM_REGISTRY_A  = 12;
+  CERT_STORE_PROV_SYSTEM_REGISTRY_W  = 13;
+  CERT_STORE_PROV_SYSTEM_REGISTRY    = CERT_STORE_PROV_SYSTEM_REGISTRY_W;
+  CERT_STORE_PROV_PHYSICAL_W         = 14;
+  CERT_STORE_PROV_PHYSICAL           = CERT_STORE_PROV_PHYSICAL_W;
+  CERT_STORE_PROV_SMART_CARD_W       = 15;
+  CERT_STORE_PROV_SMART_CARD         = CERT_STORE_PROV_SMART_CARD_W;
+  CERT_STORE_PROV_LDAP_W             = 16;
+  CERT_STORE_PROV_LDAP               = CERT_STORE_PROV_LDAP_W;
+  //
   CERT_SYSTEM_STORE_CURRENT_USER  = $00010000;
   CERT_SYSTEM_STORE_LOCAL_MACHINE = $00020000;
   //
@@ -310,7 +331,7 @@ begin
    end;
 
   // Open in-mem temporal certificate store
-  pStoreTmp := CertOpenStore(CERT_STORE_PROV_MEMORY, 0, 0, 0, nil);
+  pStoreTmp := CertOpenStore(LPCSTR(CERT_STORE_PROV_MEMORY), 0, 0, 0, nil);
 
   // HEX SHA1 Hash of the certificate to find
   if sha1<>'' then
@@ -453,9 +474,9 @@ begin
   cmd := TCommandLineReader.create;
     cmd.declareflag ('export','');
     cmd.declareflag ('enum','');
-    cmd.declareString('store', 'MY');
+    cmd.declareString('store', 'MY','MY');
     cmd.declareString('subject', '');
-    cmd.declareString('hash', '');
+    cmd.declareString('hash', 'sha1');
     cmd.declarestring('profile', 'user or machine','user' );
 
     cmd.parse(cmdline);
