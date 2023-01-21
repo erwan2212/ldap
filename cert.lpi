@@ -24,10 +24,10 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="--export --hash=&quot;EB 9B 65 ED 39 82 6F BA F5 19 02 CC 87 BA 8D AE 09 A2 91 C2&quot;"/>
+        <CommandLineParams Value="--export --hash=&quot;EB 9B 65 ED 39 82 6F BA F5 19 02 CC 87 BA 8D AE 09 A2 91 C2&quot; --store=&quot;MY&quot;"/>
       </local>
     </RunParams>
-    <Units Count="2">
+    <Units Count="3">
       <Unit0>
         <Filename Value="cert.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -37,6 +37,10 @@
         <Filename Value="advapi32.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="..\rcmdline-master\rcmdline.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

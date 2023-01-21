@@ -6,6 +6,11 @@ uses windows,sysutils,schannel,
 const
   CERT_STORE_PROV_MEMORY = (LPCSTR(2));
   CERT_STORE_ADD_REPLACE_EXISTING                    = 3;
+  CERT_STORE_PROV_SYSTEM_A = (LPCSTR(9));
+  CERT_STORE_PROV_SYSTEM_W =  (LPCSTR(10));
+  CERT_STORE_PROV_SYSTEM = CERT_STORE_PROV_SYSTEM_W;
+  CERT_SYSTEM_STORE_CURRENT_USER  = $00010000;
+  CERT_SYSTEM_STORE_LOCAL_MACHINE = $00020000;
   //
 const
   CERT_KEY_PROV_HANDLE_PROP_ID        = 1;
@@ -266,7 +271,19 @@ begin
 
   // Open system certificate store
   pStore := CertOpenSystemStoreW(0, pwidechar(store));
-
+  {
+  pStore := CertOpenStore(
+       CERT_STORE_PROV_SYSTEM,
+       0,                      // Encoding type not needed
+                               // with this PROV.
+       0,                   // Accept the default HCRYPTPROV.
+       CERT_SYSTEM_STORE_CURRENT_USER,
+                               // Set the system store location in
+                               // the registry.
+       pchar(store));                 // Could have used other predefined
+                               // system stores
+                               // including Trust, CA, or Root.
+  }
   // Open in-mem temporal certificate store
   pStoreTmp := CertOpenStore(CERT_STORE_PROV_MEMORY, 0, 0, 0, nil);
 
@@ -278,15 +295,15 @@ begin
       if CryptStringToBinaryA(pchar(sha1), SHA1_HASH_STRING_LENGTH,  CRYPT_STRING_HEXRAW,    nil, @dwHashDataLength, nil,nil) then
          begin
            setlength(buffer,dwHashDataLength);
-           if CryptStringToBinaryA(pchar(sha1),SHA1_HASH_STRING_LENGTH,CRYPT_STRING_HEXRAW,@Buffer[0],@dwHashDataLength,nil, nil) then
+           if CryptStringToBinaryA(pchar(sha1),SHA1_HASH_STRING_LENGTH,CRYPT_STRING_HEXRAW,@buffer[0],@dwHashDataLength,nil, nil) then
               begin
               Hash.cbData := Length(Buffer);
-              Hash.pbData := @Buffer[0];
+              Hash.pbData := pbyte(@Buffer[0]);
               end;
          end;
 
   pCert := CertFindCertificateInStore(pStore,
-                                      X509_ASN_ENCODING,
+                                      X509_ASN_ENCODING or PKCS_7_ASN_ENCODING,
                                       0,
                                       CERT_FIND_SHA1_HASH,
                                       @Hash,
@@ -385,7 +402,7 @@ begin
 
   // Now PFX.pbData points to PFX information of length PFX.cbData
   // Write it to a temporary file that replaces your PEM files.
-
+ if subject='' then subject:=sha1;
  Dest:=CreateFileA(PChar(subject+'.pfx'), GENERIC_WRITE, 0, nil, CREATE_ALWAYS, 0, 0);
  //writeln(PFX.cbData);
  WriteFile(Dest, PFX.pbData^, PFX.cbData, junk, nil);
