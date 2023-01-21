@@ -992,7 +992,7 @@ function CertFreeCertificateChainEngine (
 function CertFreeCertificateChain (
                   pChainContext: PCCERT_CHAIN_CONTEXT): bool; stdcall; external 'crypt32.dll';
 
-function CertOpenSystemStore(hProv :HCRYPTPROV;
+function CertOpenSystemStoreW(hProv :HCRYPTPROV;
                              szSubsystemProtocol :LPWSTR):HCERTSTORE ; stdcall; external 'crypt32.dll' name 'CertOpenSystemStoreW';
 
 function CertFindCertificateInStore(hCertStore :HCERTSTORE;
