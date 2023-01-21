@@ -25,7 +25,7 @@ begin
   cmd := TCommandLineReader.create;
   cmd.declareString('connect', 'ldap://WIN-BBC4BS466Q5.home.lab:389/dc=home,dc=lab');
   cmd.declareString('domain', 'optional, ex:home.lab');
-  cmd.declareString('user', 'cn=admin,cn=users,cn=home,cn=lab|administrator');
+  cmd.declareString('user', 'CN=Administrator,CN=Users,DC=home,DC=lab');
   cmd.declarestring('password', 'password');
   cmd.declarestring('query', '(&(objectClass=user)(mail=user1@home.lab))');
   //cmd.declarestring('certenum', 'MY|ROOT');
@@ -34,6 +34,9 @@ begin
   cmd.declareint('debug', 'optional, 1->verbose',0);
   cmd.declareint('opt_referrals', 'optional, 1->follow referrals',0);
   cmd.declareint('xorpassword', 'optional, key=666, xor->base64, https://gchq.github.io/CyberChef',0);
+
+  cmd.declarestring('changepwd', 'CN=Administrator,CN=Users,DC=home,DC=lab');
+  cmd.declarestring('value', 'password');
 
   cmd.parse(cmdline);
   //writeln(booltostr(cmd.existsProperty('user')));
@@ -63,7 +66,7 @@ begin
         if port=636 then ldapSSL :=true;
         if (uri.Protocol='ldaps') and (port=389) then ldapTLS :=true;
 
-        if cmd.readInt ('debug')=1 then
+        if cmd.readInt ('xorpassword')=1 then
         begin
         //https://gchq.github.io/CyberChef
         //input:password needs to be xor'ed then encoded to base64
@@ -98,17 +101,25 @@ begin
               raise Exception.Create('BindWinNTAuth failed:'+LDAPErrorCodeToMessage(LdapGetLastError()));
           end;
 
-
-          items:=TStringlist.Create ;
-        //if EnumerateUsers ('CN=Users,DC=home,DC=lab',items,false) then
-        //if EnumerateUsers ('DC=home,DC=lab',items,false) then
-        if enumerate(base,filter,items,false) then
+           if cmd.existsProperty('query') then
+           begin
+           items:=TStringlist.Create ;
+           //if EnumerateUsers ('CN=Users,DC=home,DC=lab',items,false) then
+           //if EnumerateUsers ('DC=home,DC=lab',items,false) then
+           if enumerate(base,filter,items,false) then
            begin
            if ldapattr <>'' then writeln(ldapattr);;
            for i:=0 to items.Count-1  do writeln(items.Strings [i])
-
            end
            else writeln('enumerate:false');
+           end;
+
+           if cmd.existsProperty('changepwd') then
+           begin
+           if changepwd(cmd.readString('changepwd'),cmd.readString('value'))
+              then writeln('changepwd:true')
+              else writeln('changepwd:false');
+           end;
 
           except
             on e:exception do writeln(e.message);

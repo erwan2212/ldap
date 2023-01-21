@@ -1297,10 +1297,10 @@ function ldap_modify_ext(ld: PLDAP; dn: PChar; mods: PLDAPMod;
   var MessageNumber: ULONG): ULONG; cdecl;
 
 {$EXTERNALSYM ldap_modify_ext_sA}
-function ldap_modify_ext_sA(ld: PLDAP; dn: PAnsiChar; var mods: PLDAPModA;
+function ldap_modify_ext_sA(ld: PLDAP; dn: PAnsiChar;mods:pointer {var mods: PLDAPModA};
   var ServerControls, ClientControls: PLDAPControlA): ULONG; cdecl;
 {$EXTERNALSYM ldap_modify_ext_sW}
-function ldap_modify_ext_sW(ld: PLDAP; dn: PWideChar; var mods: PLDAPModW;
+function ldap_modify_ext_sW(ld: PLDAP; dn: PWideChar; mods:pointer {var mods: PLDAPModW};
   var ServerControls, ClientControls: PLDAPControlW): ULONG; cdecl;
 {$EXTERNALSYM ldap_modify_ext_s}
 function ldap_modify_ext_s(ld: PLDAP; dn: PChar; var mods: PLDAPMod;

@@ -18,6 +18,8 @@ ldapAttr:widestring='';
 ldapReferrals:boolean=false;
 
 function Enumerate(const ABase: widestring; const AFilter: widestring; AComputerList: TStrings; ACNOnly: Boolean = False): Boolean;
+function ChangePWD(user,password:string):boolean;
+
 function BindWinNTAuth(const Domain: widestring; const User: widestring; const Password: widestring): Boolean;
 function SimpleBind(const DNName: widestring; const Password: widestring): Boolean;
 function EnumerateUsers(const ABase: widestring; AComputerList: TStrings; ACNOnly: Boolean = False): Boolean;
@@ -353,6 +355,35 @@ begin
   end
   else writeln('cannot connect:'+LDAPErrorCodeToMessage(LdapGetLastError()));
 end;
+end;
+
+function ChangePWD(user,password:string):boolean;
+var
+   mod_:PLDAPModW;
+   ServerControls, ClientControls: PLDAPControlW ;
+   //modv_strvals: PPAnsiChar;
+   strvals:pwidechar;
+   mods:array[0..1] of PLDAPModW;
+begin
+mod_:=getmem(sizeof(LDAPModA)+length(widestring('unicodePwd'))+length(widestring(password)));
+mod_^.mod_op := LDAP_MOD_REPLACE or LDAP_MOD_BVALUES;
+mod_^.mod_type := 'unicodePwd'; //'userPassword';
+//vals0[0] = "majeed000";
+//vals0[1] = NULL;
+strvals:=getmem(length(widestring(password)));
+strvals:=pwidechar(widestring(password));
+writeln('1ok');
+//modv_strvals :=@strvals;
+writeln('3ok');
+mod_^.modv_strvals  := @strvals;
+mod_^.modv_bvals:=nil;
+ServerControls:=nil;ClientControls:=nil;
+writeln('3ok');
+mods[0]:=mod_;mods[1]:=nil;
+ErrorCode:=ldap_modify_ext_sW(FConnection,pwidechar(widestring(user)),@mods,ServerControls, ClientControls);
+Result := ErrorCode = LDAP_SUCCESS;
+if not Result then
+      writeln(LDAPErrorCodeToMessage(ErrorCode));
 end;
 
 end.
