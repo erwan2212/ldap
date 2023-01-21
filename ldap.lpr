@@ -1,9 +1,9 @@
 program ldap;
 
-uses windows,sysutils,classes, ldaputils,uriparser,
-  rcmdline in '..\rcmdline-master\rcmdline.pas',cert,winldap;
-
-
+uses windows,sysutils,classes,strutils,base64,
+     ldaputils,winldap,
+     uriparser,
+     rcmdline in '..\rcmdline-master\rcmdline.pas';
 
 var
 
@@ -24,15 +24,16 @@ begin
   //
   cmd := TCommandLineReader.create;
   cmd.declareString('connect', 'ldap://WIN-BBC4BS466Q5.home.lab:389/dc=home,dc=lab');
-  cmd.declareString('domain', 'home.lab|empty');
+  cmd.declareString('domain', 'optional, ex:home.lab');
   cmd.declareString('user', 'cn=admin,cn=users,cn=home,cn=lab|administrator');
   cmd.declarestring('password', 'password');
   cmd.declarestring('query', '(&(objectClass=user)(mail=user1@home.lab))');
-  cmd.declarestring('certenum', 'MY|ROOT');
-  cmd.declarestring('attr', 'samaccountname');
-  cmd.declarestring('mode', 'simple|winnt','simple');
-  cmd.declareint('debug', '1',0);
-  cmd.declareint('opt_referrals', '0',0);
+  //cmd.declarestring('certenum', 'MY|ROOT');
+  cmd.declarestring('attr', 'optional, ex:samaccountname, if empty->cn');
+  cmd.declarestring('mode', 'optional, simple|winnt','simple');
+  cmd.declareint('debug', 'optional, 1->verbose',0);
+  cmd.declareint('opt_referrals', 'optional, 1->follow referrals',0);
+  cmd.declareint('xorpassword', 'optional, key=666, xor->base64, https://gchq.github.io/CyberChef',0);
 
   cmd.parse(cmdline);
   //writeln(booltostr(cmd.existsProperty('user')));
@@ -61,6 +62,16 @@ begin
         ldapattr :=widestring(cmd.readString('attr'));
         if port=636 then ldapSSL :=true;
         if (uri.Protocol='ldaps') and (port=389) then ldapTLS :=true;
+
+        if cmd.readInt ('debug')=1 then
+        begin
+        //https://gchq.github.io/CyberChef
+        //input:password needs to be xor'ed then encoded to base64
+        //output:password needs to be decoded from base64 then xor'ed
+        //writeln(EncodeStringBase64(XorString ('666','passwordxxxx')));
+        password:=widestring(Xorstring('666',DecodeStringBase64(ansistring(password))));
+        end;
+
   //
   if ldapDebug=true then
      begin
@@ -107,11 +118,6 @@ begin
           Disconnect();
         end;
   end; //if cmd.existsProperty('connect') then
-
- if cmd.existsProperty('certenum') then
-   begin
-   EnumCertificates (cmd.readstring('certenum'));
-   end;
 
 end.
 
