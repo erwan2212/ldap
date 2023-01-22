@@ -361,7 +361,7 @@ function ChangeAttr(user,attr,value:string):boolean;
 type custom1LDAPModW = record
     mod_op: ULONG;
     mod_type: PWideChar;
-    modv_bvals: ^PLDAPBerVal;
+    modv_bvals:^PLDAPBerVal; //pointer; //^PLDAPBerVal;
   end;
 Pcustom1LDAPModW=^custom1LDAPModW;
 type custom0LDAPModW = record
@@ -371,31 +371,54 @@ type custom0LDAPModW = record
   end;
 Pcustom0LDAPModW=^custom0LDAPModW;
 var
-   mod_:custom0LDAPModW;
-   ServerControls, ClientControls: PLDAPControlW ;
+   mod0:custom0LDAPModW;
    strvals:array[0..0] of pwidechar;
-   mods:array[0..1] of Pcustom0LDAPModW;//pointer
-   test:array[0..7] of byte=($63,0,$64,0,$65,0,$66,0);
+   mods0:array[0..1] of Pcustom0LDAPModW;//pointer
+   //
+   mod1:custom1LDAPModW;
+   Bvals:array[0..0] of PLDAPBerVal;
+   mods1:array[0..1] of Pcustom1LDAPModW;//pointer
 begin
-//mod_:=getmem(sizeof(LDAPModA)+length(widestring('unicodePwd'))+length(widestring(password)));
-mod_.mod_op := LDAP_MOD_REPLACE; // or LDAP_MOD_BVALUES;
-mod_.mod_type := pwidechar(widestring(attr)); //pwidechar('unicodePwd'); //'userPassword';
+if lowercase(attr)<>'unicodepwd' then
+begin
+mod0.mod_op := LDAP_MOD_REPLACE; // or LDAP_MOD_BVALUES;
+mod0.mod_type := pwidechar(widestring(attr)); //pwidechar('unicodePwd'); //'userPassword';
 strvals[0]:=pwidechar(widestring(value)); //pwidechar(@test[0]);
 //strvals[1]:=#0;
 //writeln('1ok');
-//modv_strvals :=@strvals;
 //writeln('2ok');
-mod_.modv_strvals:=@strvals;
-//mod_.modv_bvals:=nil;
-ServerControls:=nil;ClientControls:=nil;
+mod0.modv_strvals:=@strvals;
 //writeln('3ok');
-mods[0]:=@mod_;
-mods[1]:=nil;
+mods0[0]:=@mod0;
+mods0[1]:=nil;
 //ErrorCode:=ldap_modify_ext_sW(FConnection,pwidechar(widestring(user)),@mods,nil, nil);
-ErrorCode:=ldap_modify_sW(FConnection,pwidechar(widestring(user)),@mods);
+ErrorCode:=ldap_modify_sW(FConnection,pwidechar(widestring(user)),@mods0);
 Result := ErrorCode = LDAP_SUCCESS;
 if not Result then
       writeln(LDAPErrorCodeToMessage(ErrorCode));
+end;//if attr<>'unicodepwd' then
+
+if lowercase(attr)='unicodepwd' then
+begin
+mod1.mod_op := LDAP_MOD_REPLACE or LDAP_MOD_BVALUES;
+mod1.mod_type := pwidechar(widestring(attr)); //pwidechar('unicodePwd'); //'userPassword';
+writeln('1');
+bvals[0]:=getmem(64);   //??
+bvals[0]^.bv_val :=pchar('"'+value+'"');
+bvals[0]^.bv_len :=length(value)+2;
+mod1.modv_bvals :=@bvals;
+//mod1.modv_bvals :=getmem(64);;
+writeln('2');
+mods1[0]:=@mod1;
+mods1[1]:=nil;
+writeln('3');
+ErrorCode:=ldap_modify_sW(FConnection,pwidechar(widestring(user)),@mods1);
+Result := ErrorCode = LDAP_SUCCESS;
+if not Result then
+      writeln(LDAPErrorCodeToMessage(ErrorCode));
+
+end;
+
 end;
 
 end.
