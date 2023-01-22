@@ -73,6 +73,16 @@ const
   // Password to protect PFX file
   WidePass: WideString = '';
 
+  function CryptAcquireCertificatePrivateKey(
+             pCert:PCCERT_CONTEXT;
+             dwFlags:DWORD;
+             pvParameters:pvoid;
+             var phCryptProvOrNCryptKey:thandle;
+             pdwKeySpec:PDWORD;
+             pfCallerFreeProvOrNCryptKey:PBOOL): BOOL; stdcall;external 'crypt32.dll';
+
+   function CertDeleteCertificateFromStore(pCertContext: PCCERT_CONTEXT): BOOL; stdcall;external 'crypt32.dll';
+
   //
   function CertGetNameStringA(pCertContext: PCCERT_CONTEXT;
                            dwType: DWORD;
@@ -117,6 +127,11 @@ function CertOpenStore(lpszStoreProvider: LPCSTR;
                               szPassword: LPCWSTR;
                               pvPra: Pointer;
                               dwFlags: DWORD): BOOL; stdcall; external 'Crypt32.dll';
+
+ function PFXImportCertStore(pPFX:PCRYPT_DATA_BLOB;szPassword:LPCWSTR;
+                              dwFlags:DWORD):HCERTSTORE; stdcall; external 'Crypt32.dll';
+
+
 var
   cmd: TCommandLineReader;
   CERT_SYSTEM_STORE:dword=CERT_SYSTEM_STORE_CURRENT_USER;
@@ -276,6 +291,71 @@ var
    end;
 
  end;
+
+function ImportCert(store:widestring;filename:string;password:widestring=''):boolean;
+const
+  CRYPT_USER_KEYSET=$00001000;
+  CRYPT_EXPORTABLE=$00000001;
+var
+  f:thandle;
+  Buffer: array[0..8191] of byte;
+   Size: DWORD;
+   //
+   blob:CRYPT_DATA_BLOB;
+   pStore:hcertstore=thandle(-1);
+   pCert: PCCERT_CONTEXT=nil;
+   bResult:BOOL;
+   bFreeHandle:BOOL;
+   hProv:HCRYPTPROV;
+   dwKeySpec:DWORD;
+begin
+  result:=false;
+//
+  F := CreateFile(PChar(FileName), GENERIC_READ, FILE_SHARE_READ, nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+    if F = INVALID_HANDLE_VALUE then
+      RaiseLastWin32Error;
+    try
+      if not ReadFile(F, Buffer, SizeOf(Buffer), Size, nil) then
+        RaiseLastWin32Error;
+    finally
+      CloseHandle(F);
+    end;
+    //writeln('read:'+inttostr(Size));
+    //
+    blob.cbData :=size;
+    blob.pbData :=pbyte(@buffer[0]);
+    pStore:=PFXImportCertStore (@blob,pwidechar(password),CRYPT_EXPORTABLE  or CRYPT_USER_KEYSET);
+    if pStore=thandle(-1) then
+      begin
+        writeln('PFXImportCertStore failed');
+        exit;
+      end
+      else writeln('PFXImportCertStore ok');
+    //
+    // Find the certificate in P12 file (we expect there is only one)
+    pcert := CertFindCertificateInStore(pStore, X509_ASN_ENCODING or PKCS_7_ASN_ENCODING, 0, CERT_FIND_ANY, nil, nil);
+    if pcert=nil then
+      begin
+        writeln('CertFindCertificateInStore failed');
+        exit;
+      end
+      else writeln('CertFindCertificateInStore ok');
+    //check CertAddCertificateContextToStore or CertAddEncodedCertificateToStore ?
+    //
+    bResult:=CryptAcquireCertificatePrivateKey(pcert, 0, nil, hProv, @dwKeySpec, @bFreeHandle);
+    if bresult=true then
+      begin
+        writeln('CryptAcquireCertificatePrivateKey failed');
+        exit;
+      end
+      else writeln('CryptAcquireCertificatePrivateKey ok');
+    //
+    //at this point we are ready to sign with CryptSignMessage or encrypt with ...
+    //
+    CertFreeCertificateContext(pCert);
+    CertCloseStore(pStore, 0);
+    result:=true;
+end;
 
 function ExportCert(store:widestring;subject:string;sha1:string=''):boolean;
 var
@@ -469,15 +549,100 @@ begin
   result:=true;
 end;
 
+function DeleteCertificate(store:widestring;subject:string;sha1:string=''):boolean;
+var
+  pStore: HCERTSTORE=thandle(-1);
+  dwHashDataLength:dword=0;
+  Buffer: array of char;
+  pCert: PCCERT_CONTEXT;
+  Hash: CRYPT_INTEGER_BLOB;
+  str:string;
+begin
+
+ // Open system certificate store
+  pStore:=thandle(-1);
+  //pStore := CertOpenSystemStoreW(0, pwidechar(store));
+
+  pStore := CertOpenStore(
+       CERT_STORE_PROV_SYSTEM,
+       0,                      // Encoding type not needed
+                               // with this PROV.
+       0,                   // Accept the default HCRYPTPROV.
+       CERT_SYSTEM_STORE,
+                               // Set the system store location in
+                               // the registry.
+       pchar(store));                 // Could have used other predefined
+                               // system stores
+                               // including Trust, CA, or Root.
+
+ if pstore=thandle(-1) then
+   begin
+    writeln('CertOpenStore failed:'+inttostr(getlasterror));
+    exit;
+   end;
+
+ // HEX SHA1 Hash of the certificate to find
+  if sha1<>'' then
+    begin
+      sha1:=stringreplace(sha1,' ','',[rfReplaceAll, rfIgnoreCase]);
+      //sha1 := '001AA5081EDA97805B4D6A9B6730CDBEE39761C3';
+      if CryptStringToBinaryA(pchar(sha1), SHA1_HASH_STRING_LENGTH,  CRYPT_STRING_HEXRAW,    nil, @dwHashDataLength, nil,nil) then
+         begin
+           setlength(buffer,dwHashDataLength);
+           if CryptStringToBinaryA(pchar(sha1),SHA1_HASH_STRING_LENGTH,CRYPT_STRING_HEXRAW,@buffer[0],@dwHashDataLength,nil, nil) then
+              begin
+              Hash.cbData := Length(Buffer);
+              Hash.pbData := pbyte(@Buffer[0]);
+              end;
+         end;
+
+  pCert := CertFindCertificateInStore(pStore,
+                                      X509_ASN_ENCODING or PKCS_7_ASN_ENCODING,
+                                      0,
+                                      CERT_FIND_SHA1_HASH,
+                                      @Hash,
+                                      nil);
+
+  end;
+
+    if subject<>'' then
+    begin
+    setlength(buffer,255);
+    str:=subject; //'mycomputer';
+    copymemory(@buffer[0],@str[1],length(str));
+    pCert := CertFindCertificateInStore(pStore,
+                                      X509_ASN_ENCODING or PKCS_7_ASN_ENCODING,
+                                      0,
+                                      CERT_FIND_SUBJECT_STR_A ,//CERT_FIND_SUBJECT_STR CERT_FIND_SUBJECT_NAME
+                                      @Buffer[0],
+                                      nil);
+    end;
+
+    if pcert=nil then
+     begin
+       writeln('CertFindCertificateInStore failed:'+inttostr(getlasterror));
+       exit;
+     end;
+
+  result:=CertDeleteCertificateFromStore(pcert);
+  //
+  CertFreeCertificateContext(pCert);
+  CertCloseStore(pStore, 0);
+end;
+
 begin
  //
   cmd := TCommandLineReader.create;
     cmd.declareflag ('export','');
+    cmd.declareflag ('import','');
     cmd.declareflag ('enum','');
+    cmd.declareflag ('delete','');
     cmd.declareString('store', 'MY','MY');
     cmd.declareString('subject', '');
     cmd.declareString('hash', 'sha1');
     cmd.declarestring('profile', 'user or machine','user' );
+    cmd.declarestring('password', 'cert password' );
+    cmd.declarestring('filename', 'cert filename' );
 
     cmd.parse(cmdline);
 
@@ -493,5 +658,18 @@ begin
 
   if cmd.existsProperty('enum')
      then EnumCertificates(cmd.readstring('store'));
+
+  if (cmd.existsProperty('delete')) and (cmd.existsProperty('subject'))
+     then if DeleteCertificate(widestring(cmd.readstring('store')),cmd.readstring('subject'))=true
+          then writeln('ok') else writeln('nok');
+
+   if (cmd.existsProperty('delete')) and (cmd.existsProperty('hash'))
+     then if DeleteCertificate(widestring(cmd.readstring('store')),'',cmd.readstring('hash'))=true
+          then writeln('ok') else writeln('nok');
+
+   if cmd.existsProperty('import')
+      then if ImportCert(widestring(cmd.readstring('store')),cmd.readstring('filename'),widestring(cmd.readstring('password')))=true
+           then writeln('ok') else writeln('nok');
+
 end.
 
