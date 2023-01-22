@@ -1275,7 +1275,7 @@ function ldap_modify(ld: PLDAP; dn: PChar; mods: PLDAPMod): ULONG; cdecl;
 function ldap_modify_sA(ld: PLDAP; dn: PAnsiChar; mods: PLDAPModA): ULONG; cdecl;
 {$EXTERNALSYM ldap_modify_sW}
 //function ldap_modify_sW(ld: PLDAP; dn: PWideChar; var mods: PLDAPModW): ULONG; cdecl;
-function ldap_modify_sW(ld: PLDAP; dn: PWideChar; mods: PLDAPModW): ULONG; cdecl;
+function ldap_modify_sW(ld: PLDAP; dn: PWideChar; mods: pointer {PLDAPModW}): ULONG; cdecl;
 {$EXTERNALSYM ldap_modify_s}
 //function ldap_modify_s(ld: PLDAP; dn: PChar; var mods: PLDAPMod): ULONG; cdecl;
 function ldap_modify_s(ld: PLDAP; dn: PChar; mods: PLDAPMod): ULONG; cdecl;
@@ -1301,7 +1301,7 @@ function ldap_modify_ext_sA(ld: PLDAP; dn: PAnsiChar;mods:pointer {var mods: PLD
   var ServerControls, ClientControls: PLDAPControlA): ULONG; cdecl;
 {$EXTERNALSYM ldap_modify_ext_sW}
 function ldap_modify_ext_sW(ld: PLDAP; dn: PWideChar; mods:pointer {var mods: PLDAPModW};
-  var ServerControls, ClientControls: PLDAPControlW): ULONG; cdecl;
+  {var} ServerControls, ClientControls: pointer{PLDAPControlW}): ULONG; cdecl;
 {$EXTERNALSYM ldap_modify_ext_s}
 function ldap_modify_ext_s(ld: PLDAP; dn: PChar; var mods: PLDAPMod;
   var ServerControls, ClientControls: PLDAPControl): ULONG; cdecl;

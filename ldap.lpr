@@ -35,7 +35,7 @@ begin
   cmd.declareint('opt_referrals', 'optional, 1->follow referrals',0);
   cmd.declareint('xorpassword', 'optional, key=666, xor->base64, https://gchq.github.io/CyberChef',0);
 
-  cmd.declarestring('changepwd', 'CN=Administrator,CN=Users,DC=home,DC=lab');
+  cmd.declarestring('changeattr', 'CN=Administrator,CN=Users,DC=home,DC=lab');
   cmd.declarestring('value', 'password');
 
   cmd.parse(cmdline);
@@ -114,11 +114,11 @@ begin
            else writeln('enumerate:false');
            end;
 
-           if cmd.existsProperty('changepwd') then
+           if cmd.existsProperty('changeattr') then
            begin
-           if changepwd(cmd.readString('changepwd'),cmd.readString('value'))
-              then writeln('changepwd:true')
-              else writeln('changepwd:false');
+           if changeattr(cmd.readString('changeattr'),cmd.readString('attr'),cmd.readString('value'))
+              then writeln('changeattr:true')
+              else writeln('changeattr:false');
            end;
 
           except

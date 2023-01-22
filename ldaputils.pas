@@ -18,7 +18,7 @@ ldapAttr:widestring='';
 ldapReferrals:boolean=false;
 
 function Enumerate(const ABase: widestring; const AFilter: widestring; AComputerList: TStrings; ACNOnly: Boolean = False): Boolean;
-function ChangePWD(user,password:string):boolean;
+function ChangeAttr(user,attr,value:string):boolean;
 
 function BindWinNTAuth(const Domain: widestring; const User: widestring; const Password: widestring): Boolean;
 function SimpleBind(const DNName: widestring; const Password: widestring): Boolean;
@@ -357,30 +357,42 @@ begin
 end;
 end;
 
-function ChangePWD(user,password:string):boolean;
+function ChangeAttr(user,attr,value:string):boolean;
+type custom1LDAPModW = record
+    mod_op: ULONG;
+    mod_type: PWideChar;
+    modv_bvals: ^PLDAPBerVal;
+  end;
+Pcustom1LDAPModW=^custom1LDAPModW;
+type custom0LDAPModW = record
+    mod_op: ULONG;
+    mod_type: PWideChar;
+    modv_strvals: pointer; //^PWideChar;
+  end;
+Pcustom0LDAPModW=^custom0LDAPModW;
 var
-   mod_:PLDAPModW;
+   mod_:custom0LDAPModW;
    ServerControls, ClientControls: PLDAPControlW ;
-   //modv_strvals: PPAnsiChar;
-   strvals:pwidechar;
-   mods:array[0..1] of PLDAPModW;
+   strvals:array[0..0] of pwidechar;
+   mods:array[0..1] of Pcustom0LDAPModW;//pointer
+   test:array[0..7] of byte=($63,0,$64,0,$65,0,$66,0);
 begin
-mod_:=getmem(sizeof(LDAPModA)+length(widestring('unicodePwd'))+length(widestring(password)));
-mod_^.mod_op := LDAP_MOD_REPLACE or LDAP_MOD_BVALUES;
-mod_^.mod_type := 'unicodePwd'; //'userPassword';
-//vals0[0] = "majeed000";
-//vals0[1] = NULL;
-strvals:=getmem(length(widestring(password)));
-strvals:=pwidechar(widestring(password));
-writeln('1ok');
+//mod_:=getmem(sizeof(LDAPModA)+length(widestring('unicodePwd'))+length(widestring(password)));
+mod_.mod_op := LDAP_MOD_REPLACE; // or LDAP_MOD_BVALUES;
+mod_.mod_type := pwidechar(widestring(attr)); //pwidechar('unicodePwd'); //'userPassword';
+strvals[0]:=pwidechar(widestring(value)); //pwidechar(@test[0]);
+//strvals[1]:=#0;
+//writeln('1ok');
 //modv_strvals :=@strvals;
-writeln('3ok');
-mod_^.modv_strvals  := @strvals;
-mod_^.modv_bvals:=nil;
+//writeln('2ok');
+mod_.modv_strvals:=@strvals;
+//mod_.modv_bvals:=nil;
 ServerControls:=nil;ClientControls:=nil;
-writeln('3ok');
-mods[0]:=mod_;mods[1]:=nil;
-ErrorCode:=ldap_modify_ext_sW(FConnection,pwidechar(widestring(user)),@mods,ServerControls, ClientControls);
+//writeln('3ok');
+mods[0]:=@mod_;
+mods[1]:=nil;
+//ErrorCode:=ldap_modify_ext_sW(FConnection,pwidechar(widestring(user)),@mods,nil, nil);
+ErrorCode:=ldap_modify_sW(FConnection,pwidechar(widestring(user)),@mods);
 Result := ErrorCode = LDAP_SUCCESS;
 if not Result then
       writeln(LDAPErrorCodeToMessage(ErrorCode));
