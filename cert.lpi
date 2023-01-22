@@ -34,7 +34,7 @@
         <UnitName Value="certfpc"/>
       </Unit0>
       <Unit1>
-        <Filename Value="advapi32.pas"/>
+        <Filename Value="crypt32.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit1>
       <Unit2>

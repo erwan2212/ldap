@@ -1,7 +1,7 @@
 program certfpc;
 
 uses windows,sysutils,schannel,
-  rcmdline in '..\rcmdline-master\rcmdline.pas', advapi32;
+  rcmdline in '..\rcmdline-master\rcmdline.pas', crypt32;
 
 const
   //CERT_STORE_PROV_MEMORY = (LPCSTR(2));
@@ -61,8 +61,7 @@ const
   SHA1_HASH_STRING_LENGTH=40;
   CRYPT_STRING_HEXRAW=$0000000c;
 
-  type
-    PPCCERT_CONTEXT = ^PCCERT_CONTEXT;
+
 
 const
   REPORT_NO_PRIVATE_KEY                 = $0001;
@@ -73,63 +72,6 @@ const
   // Password to protect PFX file
   WidePass: WideString = '';
 
-  function CryptAcquireCertificatePrivateKey(
-             pCert:PCCERT_CONTEXT;
-             dwFlags:DWORD;
-             pvParameters:pvoid;
-             var phCryptProvOrNCryptKey:thandle;
-             pdwKeySpec:PDWORD;
-             pfCallerFreeProvOrNCryptKey:PBOOL): BOOL; stdcall;external 'crypt32.dll';
-
-   function CertDeleteCertificateFromStore(pCertContext: PCCERT_CONTEXT): BOOL; stdcall;external 'crypt32.dll';
-
-  //
-  function CertGetNameStringA(pCertContext: PCCERT_CONTEXT;
-                           dwType: DWORD;
-                           dwFlags: DWORD;
-                           pvTypePara: Pointer;
-                           pszNameString: LPTSTR;
-                           cchNameString: DWORD): DWORD; stdcall;external 'crypt32.dll';
-
-  function CertGetCertificateContextProperty(pCertContext :PCCERT_CONTEXT;
-                                           dwPropId :DWORD;
-                                           pvData :PVOID;
-                                           pcbData :PDWORD):BOOL ; stdcall;external 'crypt32.dll';
-
-  function CertEnumCertificateContextProperties(pCertContext :PCCERT_CONTEXT;
-                                                dwPropId :DWORD):DWORD ; stdcall;external 'crypt32.dll';
-
-  function CertEnumCertificatesInStore(hCertStore :HCERTSTORE;
-                                     pPrevCertContext :PCCERT_CONTEXT
-                                     ):PCCERT_CONTEXT ; stdcall;external 'crypt32.dll';
-  //
-
-function CertOpenStore(lpszStoreProvider: LPCSTR;
-  dwEncodingType: DWORD;
-  hCryptProv: HCRYPTPROV;
-  dwFlags: DWORD;
-  const pvPara: PVOID): HCERTSTORE; stdcall;external 'crypt32.dll';
-
- function CertAddCertificateLinkToStore(hCertStore: HCERTSTORE;
-   pCertContext: PCCERT_CONTEXT; dwAddDisposition: DWORD;
-   ppStoreContext: PPCCERT_CONTEXT): BOOL; stdcall;external 'crypt32.dll';
-
- function CertFindCertificateInStore(hCertStore :HCERTSTORE;
-                                    dwCertEncodingType :DWORD;
-                                    dwFindFlags :DWORD;
-                                    dwFindType :DWORD;
-                                    pvFindPara :pointer;
-                                    pPrevCertContext :PCCERT_CONTEXT
-                                    ):PCCERT_CONTEXT ; stdcall; external 'crypt32.dll';
-
- function PFXExportCertStoreEx(hStore: HCERTSTORE;
-                              var pPFX: CRYPT_DATA_BLOB;
-                              szPassword: LPCWSTR;
-                              pvPra: Pointer;
-                              dwFlags: DWORD): BOOL; stdcall; external 'Crypt32.dll';
-
- function PFXImportCertStore(pPFX:PCRYPT_DATA_BLOB;szPassword:LPCWSTR;
-                              dwFlags:DWORD):HCERTSTORE; stdcall; external 'Crypt32.dll';
 
 
 var
