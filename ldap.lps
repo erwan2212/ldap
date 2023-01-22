@@ -17,7 +17,6 @@
       <Unit1>
         <Filename Value="ldaputils.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="397"/>
         <CursorPos Y="406"/>
@@ -29,8 +28,7 @@
         <Filename Value="Cert.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="2"/>
-        <CursorPos X="17" Y="14"/>
+        <CursorPos Y="11"/>
         <UsageCount Value="293"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -47,7 +45,7 @@
       <Unit4>
         <Filename Value="WinLDAP.pas"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="592"/>
+        <TopLine Value="2981"/>
         <CursorPos X="14" Y="604"/>
         <UsageCount Value="146"/>
         <Loaded Value="True"/>
@@ -56,8 +54,9 @@
       <Unit5>
         <Filename Value="Wcrypt2.pas"/>
         <UnitName Value="wcrypt2"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="336"/>
+        <TopLine Value="7539"/>
         <CursorPos X="47" Y="348"/>
         <UsageCount Value="125"/>
         <Loaded Value="True"/>

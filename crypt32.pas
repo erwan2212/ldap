@@ -9,8 +9,17 @@ uses windows,schannel;
 
     type
     PPCCERT_CONTEXT = ^PCCERT_CONTEXT;
+    HCRYPTKEY = ULONG_PTR;
 
 //
+
+function CryptGetUserKey(hProv: HCRYPTPROV; dwKeySpec: DWORD;
+         var phUserKey: HCRYPTKEY): BOOL; stdcall;external 'advapi32.dll';
+
+function CryptExportKey(hKey, hExpKey: HCRYPTKEY; dwBlobType, dwFlags: DWORD;
+  pbData: LPBYTE; var pdwDataLen: DWORD): BOOL; stdcall;external 'advapi32.dll';
+
+
 function CryptAcquireCertificatePrivateKey(
              pCert:PCCERT_CONTEXT;
              dwFlags:DWORD;
@@ -41,6 +50,10 @@ function CryptAcquireCertificatePrivateKey(
                                      pPrevCertContext :PCCERT_CONTEXT
                                      ):PCCERT_CONTEXT ; stdcall;external 'crypt32.dll';
   //
+
+   function CertAddCertificateContextToStore(hCertStore: HCERTSTORE;
+     pCertContext: PCCERT_CONTEXT; dwAddDisposition: DWORD;
+     ppStoreContext: PPCCERT_CONTEXT): BOOL; stdcall;external 'crypt32.dll';
 
 function CertOpenStore(lpszStoreProvider: LPCSTR;
   dwEncodingType: DWORD;

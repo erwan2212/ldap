@@ -238,6 +238,9 @@ function ImportCert(store:widestring;filename:string;password:widestring=''):boo
 const
   CRYPT_USER_KEYSET=$00001000;
   CRYPT_EXPORTABLE=$00000001;
+//
+  PUBLICKEYBLOB        = $6;
+  PRIVATEKEYBLOB       = $7;
 var
   f:thandle;
   Buffer: array[0..8191] of byte;
@@ -245,11 +248,16 @@ var
    //
    blob:CRYPT_DATA_BLOB;
    pStore:hcertstore=thandle(-1);
+   myStore:hcertstore=thandle(-1);
    pCert: PCCERT_CONTEXT=nil;
    bResult:BOOL;
    bFreeHandle:BOOL;
    hProv:HCRYPTPROV;
    dwKeySpec:DWORD;
+   //
+   hUserKey:HCRYPTKEY;
+   dwBlobLen:dword;
+   pKeyData:lpbyte;
 begin
   result:=false;
 //
@@ -266,7 +274,7 @@ begin
     //
     blob.cbData :=size;
     blob.pbData :=pbyte(@buffer[0]);
-    pStore:=PFXImportCertStore (@blob,pwidechar(password),CRYPT_EXPORTABLE  or CRYPT_USER_KEYSET);
+    pStore:=PFXImportCertStore (@blob,pwidechar(password),CRYPT_EXPORTABLE  {or CRYPT_USER_KEYSET});
     if pStore=thandle(-1) then
       begin
         writeln('PFXImportCertStore failed');
@@ -283,9 +291,31 @@ begin
       end
       else writeln('CertFindCertificateInStore ok');
     //check CertAddCertificateContextToStore or CertAddEncodedCertificateToStore ?
+    {
+    myStore := CertOpenStore(
+           CERT_STORE_PROV_SYSTEM,
+           0,                      // Encoding type not needed
+                                   // with this PROV.
+           0,                   // Accept the default HCRYPTPROV.
+           CERT_SYSTEM_STORE,
+                                   // Set the system store location in
+                                   // the registry.
+           pchar(store));                 // Could have used other predefined
+                                   // system stores
+                                   // including Trust, CA, or Root.
+    if mystore=thandle(-1) then
+      begin
+        writeln('CertOpenStore failed');
+        exit;
+      end;
+    if CertAddCertificateContextToStore(myStore, pcert, CERT_STORE_ADD_REPLACE_EXISTING, 0)=true then
+      begin
+        writeln('CertAddCertificateContextToStore failed');
+        exit;
+      end;
+    }
     //
-    bResult:=CryptAcquireCertificatePrivateKey(pcert, 0, nil, hProv, @dwKeySpec, @bFreeHandle);
-    if bresult=true then
+     if CryptAcquireCertificatePrivateKey(pcert, 0, nil, hProv, @dwKeySpec, @bFreeHandle)=false then
       begin
         writeln('CryptAcquireCertificatePrivateKey failed');
         exit;
@@ -293,9 +323,19 @@ begin
       else writeln('CryptAcquireCertificatePrivateKey ok');
     //
     //at this point we are ready to sign with CryptSignMessage or encrypt with ...
+    //or use CryptExportKey
+    {
+    CryptGetUserKey(hProv, dwKeySpec, hUserKey) ;
+    CryptExportKey(hUserKey, thandle(-1), PRIVATEKEYBLOB,  0, nil, dwBlobLen) ;
+    pKeyData:=allocmem(dwBlobLen);
+    CryptExportKey(hUserKey, thandle(-1), PRIVATEKEYBLOB, 0, pKeyData, dwBlobLen) ;
+    }
     //
+
     CertFreeCertificateContext(pCert);
-    CertCloseStore(pStore, 0);
+    if mystore<>thandle(-1) then CertCloseStore(mystore, 0);
+    if pStore<>thandle(-1) then CertCloseStore(pStore, 0);
+
     result:=true;
 end;
 

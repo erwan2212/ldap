@@ -8,7 +8,6 @@ uses WinLdap, wcrypt2, Windows,sysutils,dialogs,constant;
 
 function  VerifyCert(Connection: PLDAP; pServerCert: PCCERT_CONTEXT): BOOLEAN; cdecl ;
 
-procedure EnumCertificates(storename:string);
 
 var
   CertServerName:widestring;
