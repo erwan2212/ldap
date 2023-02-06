@@ -27,11 +27,15 @@ begin
   cmd.declareString('domain', 'optional, ex:home.lab');
   cmd.declareString('user', 'CN=Administrator,CN=Users,DC=home,DC=lab');
   cmd.declarestring('password', 'password');
+  //(userAccountControl:1.2.840.113556.1.4.803:=32) - password not required
+  //(userAccountControl:1.2.840.113556.1.4.803:=65536) - never expires
+  //(userAccountControl:1.2.840.113556.1.4.803:=2) - disabled accounts
   cmd.declarestring('query', '(&(objectClass=user)(mail=user1@home.lab))');
   //cmd.declarestring('certenum', 'MY|ROOT');
   cmd.declarestring('attr', 'optional, ex:samaccountname, if empty->cn');
   cmd.declarestring('mode', 'optional, simple|winnt','simple');
   cmd.declareint('debug', 'optional, 1->verbose',0);
+  cmd.declareint('certstrict', '1 or 0',1);
   cmd.declareint('opt_referrals', 'optional, 1->follow referrals',0);
   cmd.declareint('xorpassword', 'optional, key=666, xor->base64, https://gchq.github.io/CyberChef',0);
 
@@ -76,6 +80,7 @@ begin
         end;
 
   //
+  if cmd.readInt('certstrict')=0 then CertStrict :=false;
   if ldapDebug=true then
      begin
           writeln('protocol:'+uri.Protocol );

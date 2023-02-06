@@ -616,7 +616,7 @@ begin
  //
   cmd := TCommandLineReader.create;
     cmd.declareflag ('export','');
-    cmd.declareflag ('import','');
+    //cmd.declareflag ('import','');
     cmd.declareflag ('enum','');
     cmd.declareflag ('delete','');
     cmd.declareString('store', 'MY','MY');
@@ -648,10 +648,11 @@ begin
    if (cmd.existsProperty('delete')) and (cmd.existsProperty('hash'))
      then if DeleteCertificate(widestring(cmd.readstring('store')),'',cmd.readstring('hash'))=true
           then writeln('ok') else writeln('nok');
-
+   {
    if cmd.existsProperty('import')
       then if ImportCert(widestring(cmd.readstring('store')),cmd.readstring('filename'),widestring(cmd.readstring('password')))=true
            then writeln('ok') else writeln('nok');
+   }
 
 end.
 

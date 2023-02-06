@@ -12,6 +12,7 @@ function  VerifyCert(Connection: PLDAP; pServerCert: PCCERT_CONTEXT): BOOLEAN; c
 var
   CertServerName:widestring;
   certdebug:boolean=false;
+  CertUserAbort:boolean=true;
 
 implementation
 
@@ -356,6 +357,7 @@ begin
       CertUserAbort := true;
     uiDlg.Free;
     }
+    if CertUserAbort=false then result:=true ; //despite the cert error, we continue
     writeln('VerifyCert:'+errStr);
   end;
   CertCloseStore(collect, 0);

@@ -13,6 +13,7 @@ host,user,password,domain,filter,base:widestring;
 port:ulong;
 ldapSSL:boolean=false;
 ldapTLS:boolean=false;
+CertStrict:boolean=true;
 ldapDebug:boolean=false;
 ldapAttr:widestring='';
 ldapReferrals:boolean=false;
@@ -92,6 +93,7 @@ function Connect(): Boolean;
 begin
 if not Assigned(FConnection) then
 begin
+  if CertStrict =false then cert.CertUserAbort :=false;
   if ldapSSL
      then FConnection := ldap_sslinitW(PWideChar(Host), Port,1)
      else FConnection := ldap_initW(PWideChar(Host), Port);
@@ -150,7 +152,7 @@ Result := False;
     ldapcheck(ldap_set_option(FConnection, LDAP_OPT_PROTOCOL_VERSION, @version),true); //to be able to deep search...
     if ldapSSL or ldapTLS then
        begin
-         CertServerName:=host;
+         cert.CertServerName:=host;
          ldapcheck(ldap_set_option(FConnection, LDAP_OPT_SERVER_CERTIFICATE, @VerifyCert),true);
        end;
     if ldapTLS
