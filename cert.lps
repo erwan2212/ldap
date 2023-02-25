@@ -10,8 +10,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="certfpc"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="613"/>
-        <CursorPos X="7" Y="619"/>
+        <TopLine Value="592"/>
+        <CursorPos X="39" Y="631"/>
         <UsageCount Value="39"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -39,7 +39,6 @@
         <Filename Value="schannel.pas"/>
         <UnitName Value="SChannel"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="916"/>
         <CursorPos X="61" Y="58"/>
         <UsageCount Value="18"/>
         <Loaded Value="True"/>
@@ -63,7 +62,7 @@
         <Filename Value="Wcrypt2.pas"/>
         <UnitName Value="wcrypt2"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="4180"/>
+        <TopLine Value="4179"/>
         <CursorPos X="3" Y="4192"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>

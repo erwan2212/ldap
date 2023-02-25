@@ -24,7 +24,6 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="--connect=&quot;ldaps://WIN-BBC4BS466Q5.home.lab:636/dc=home,dc=lab&quot; --user=&quot;CN=Administrator,CN=Users,DC=home,DC=lab&quot; --password=&quot;Password1310&quot;  --changeattr=&quot;CN=user1,CN=Users,DC=home,DC=lab&quot; --attr=&quot;unicodepwd&quot; --value=&quot;!password&quot; --debug=1"/>
       </local>
     </RunParams>
     <Units Count="4">

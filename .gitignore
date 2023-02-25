@@ -4,4 +4,6 @@
 *.o
 backup
 lib
+*.key
+*.crt
 
