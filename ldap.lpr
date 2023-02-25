@@ -46,6 +46,12 @@ begin
   //writeln(booltostr(cmd.existsProperty('user')));
   //writeln(cmd.readString('user'));
 
+  if cmd.existsProperty('connect')=false then
+  begin
+  writeln('ldap.exe --help');
+  exit;
+  end;
+
 
   uri:=parseuri(cmd.readString('connect'));
 
