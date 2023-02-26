@@ -9,20 +9,20 @@
         <Filename Value="cert.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="certfpc"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="592"/>
-        <CursorPos X="39" Y="631"/>
-        <UsageCount Value="39"/>
+        <TopLine Value="616"/>
+        <CursorPos X="33" Y="634"/>
+        <UsageCount Value="43"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="crypt32.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="48"/>
-        <CursorPos X="50" Y="18"/>
-        <UsageCount Value="35"/>
+        <TopLine Value="13"/>
+        <CursorPos X="24" Y="19"/>
+        <UsageCount Value="39"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
@@ -33,14 +33,14 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="34"/>
+        <UsageCount Value="38"/>
       </Unit2>
       <Unit3>
         <Filename Value="schannel.pas"/>
         <UnitName Value="SChannel"/>
         <EditorIndex Value="3"/>
         <CursorPos X="61" Y="58"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
@@ -64,7 +64,7 @@
         <EditorIndex Value="2"/>
         <TopLine Value="4179"/>
         <CursorPos X="3" Y="4192"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="14"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit6>

@@ -619,9 +619,9 @@ begin
     //cmd.declareflag ('import','');
     cmd.declareflag ('enum','');
     cmd.declareflag ('delete','');
-    cmd.declareString('store', 'MY','MY');
-    cmd.declareString('subject', '');
-    cmd.declareString('hash', 'sha1');
+    cmd.declareString('store', 'certificate store','MY');
+    cmd.declareString('subject', 'subject used when exporting or deleting');
+    cmd.declareString('hash', 'sha1 used when exporting or deleting');
     cmd.declarestring('profile', 'user or machine','user' );
     cmd.declarestring('password', 'cert password' );
     cmd.declarestring('filename', 'cert filename' );
