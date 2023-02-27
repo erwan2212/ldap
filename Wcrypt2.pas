@@ -672,7 +672,7 @@ function CryptReleaseContext(hProv   :HCRYPTPROV;
 function CryptGenKey(hProv   :HCRYPTPROV;
                      Algid   :ALG_ID;
                      dwFlags :DWORD;
-                     phKey   :PHCRYPTKEY) :BOOL;stdcall ;
+                     var phKey   :HCRYPTKEY) :BOOL;stdcall ;
 
 
 function CryptDeriveKey(hProv     :HCRYPTPROV;
@@ -732,7 +732,7 @@ function CryptGenRandom(hProv    :HCRYPTPROV;
 
 function CryptGetUserKey(hProv     :HCRYPTPROV;
                          dwKeySpec :DWORD;
-                         phUserKey :PHCRYPTKEY) :BOOL;stdcall;
+                         var phUserKey :HCRYPTKEY) :BOOL;stdcall;
 
 
 function CryptExportKey(hKey       :HCRYPTKEY;

@@ -10,20 +10,19 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="certfpc"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="362"/>
-        <CursorPos X="32" Y="374"/>
-        <UsageCount Value="53"/>
+        <TopLine Value="994"/>
+        <CursorPos X="31" Y="1018"/>
+        <UsageCount Value="56"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="crypt32.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="20"/>
         <CursorPos X="38" Y="21"/>
-        <UsageCount Value="49"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="52"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -33,15 +32,15 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="48"/>
+        <UsageCount Value="51"/>
       </Unit2>
       <Unit3>
         <Filename Value="schannel.pas"/>
         <UnitName Value="SChannel"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="46"/>
-        <CursorPos X="3" Y="58"/>
-        <UsageCount Value="24"/>
+        <TopLine Value="594"/>
+        <CursorPos X="21" Y="606"/>
+        <UsageCount Value="26"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
@@ -63,9 +62,9 @@
         <Filename Value="Wcrypt2.pas"/>
         <UnitName Value="wcrypt2"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="4362"/>
-        <CursorPos X="3" Y="4374"/>
-        <UsageCount Value="18"/>
+        <TopLine Value="296"/>
+        <CursorPos X="17" Y="307"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit6>
@@ -80,135 +79,124 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="cert.lpr"/>
-        <Caret Line="410" TopLine="397"/>
+        <Caret Line="375" TopLine="355"/>
       </Position1>
       <Position2>
         <Filename Value="cert.lpr"/>
-        <Caret Line="411" TopLine="397"/>
+        <Caret Line="379" TopLine="367"/>
       </Position2>
       <Position3>
         <Filename Value="cert.lpr"/>
-        <Caret Line="413" TopLine="397"/>
+        <Caret Line="380" TopLine="367"/>
       </Position3>
       <Position4>
         <Filename Value="cert.lpr"/>
-        <Caret Line="100" TopLine="87"/>
+        <Caret Line="425" TopLine="413"/>
       </Position4>
       <Position5>
         <Filename Value="cert.lpr"/>
-        <Caret Line="101" TopLine="87"/>
+        <Caret Line="428" TopLine="413"/>
       </Position5>
       <Position6>
         <Filename Value="cert.lpr"/>
-        <Caret Line="102" TopLine="94"/>
+        <Caret Line="430" TopLine="413"/>
       </Position6>
       <Position7>
         <Filename Value="cert.lpr"/>
-        <Caret Line="104" TopLine="94"/>
+        <Caret Line="436" TopLine="416"/>
       </Position7>
       <Position8>
         <Filename Value="cert.lpr"/>
-        <Caret Line="103" TopLine="94"/>
+        <Caret Line="384" Column="31" TopLine="410"/>
       </Position8>
       <Position9>
         <Filename Value="cert.lpr"/>
-        <Caret Line="114" TopLine="94"/>
+        <Caret Line="333" TopLine="348"/>
       </Position9>
       <Position10>
         <Filename Value="cert.lpr"/>
-        <Caret Line="471" TopLine="460"/>
+        <Caret Line="146" Column="34" TopLine="130"/>
       </Position10>
       <Position11>
         <Filename Value="cert.lpr"/>
-        <Caret Line="117" Column="12" TopLine="144"/>
+        <Caret Line="147" Column="38" TopLine="130"/>
       </Position11>
       <Position12>
         <Filename Value="cert.lpr"/>
-        <Caret Line="414" TopLine="397"/>
+        <Caret Line="434" Column="26" TopLine="420"/>
       </Position12>
       <Position13>
         <Filename Value="cert.lpr"/>
-        <Caret Line="413" Column="82" TopLine="401"/>
+        <Caret Line="336" Column="12" TopLine="347"/>
       </Position13>
       <Position14>
         <Filename Value="cert.lpr"/>
-        <Caret Line="442" Column="32" TopLine="427"/>
+        <Caret Line="117" Column="12" TopLine="174"/>
       </Position14>
       <Position15>
         <Filename Value="cert.lpr"/>
-        <Caret Line="387" Column="31" TopLine="401"/>
+        <Caret Line="186" Column="52" TopLine="175"/>
       </Position15>
       <Position16>
         <Filename Value="cert.lpr"/>
-        <Caret Line="414" Column="36" TopLine="402"/>
+        <Caret Line="422" Column="41" TopLine="409"/>
       </Position16>
       <Position17>
         <Filename Value="cert.lpr"/>
-        <Caret Line="412" TopLine="402"/>
+        <Caret Line="184" Column="53" TopLine="178"/>
       </Position17>
       <Position18>
         <Filename Value="cert.lpr"/>
-        <Caret Line="414" TopLine="402"/>
+        <Caret Line="186" Column="54" TopLine="178"/>
       </Position18>
       <Position19>
         <Filename Value="cert.lpr"/>
-        <Caret Line="415" TopLine="402"/>
+        <Caret Line="336" Column="12" TopLine="354"/>
       </Position19>
       <Position20>
         <Filename Value="cert.lpr"/>
-        <Caret Line="416" TopLine="402"/>
+        <Caret Line="426" Column="54" TopLine="412"/>
       </Position20>
       <Position21>
         <Filename Value="cert.lpr"/>
-        <Caret Line="418" TopLine="402"/>
+        <Caret Line="336" Column="12" TopLine="356"/>
       </Position21>
       <Position22>
         <Filename Value="cert.lpr"/>
-        <Caret Line="414" TopLine="402"/>
+        <Caret Line="150" Column="38" TopLine="133"/>
       </Position22>
       <Position23>
         <Filename Value="cert.lpr"/>
-        <Caret Line="415" TopLine="402"/>
+        <Caret Line="426" Column="54" TopLine="414"/>
       </Position23>
       <Position24>
         <Filename Value="cert.lpr"/>
-        <Caret Line="416" TopLine="402"/>
+        <Caret Line="383" Column="37" TopLine="413"/>
       </Position24>
       <Position25>
         <Filename Value="cert.lpr"/>
-        <Caret Line="418" TopLine="402"/>
+        <Caret Line="336" Column="12" TopLine="345"/>
       </Position25>
       <Position26>
         <Filename Value="cert.lpr"/>
-        <Caret Line="414" TopLine="402"/>
+        <Caret Line="193" Column="42" TopLine="178"/>
       </Position26>
       <Position27>
         <Filename Value="cert.lpr"/>
-        <Caret Line="415" TopLine="402"/>
+        <Caret Line="306" Column="46" TopLine="366"/>
       </Position27>
       <Position28>
         <Filename Value="cert.lpr"/>
-        <Caret Line="416" TopLine="402"/>
+        <Caret Line="426" Column="54" TopLine="412"/>
       </Position28>
       <Position29>
         <Filename Value="cert.lpr"/>
-        <Caret Line="420" TopLine="402"/>
+        <Caret Line="406" Column="33" TopLine="411"/>
       </Position29>
       <Position30>
         <Filename Value="cert.lpr"/>
-        <Caret Line="423" TopLine="403"/>
+        <Caret Line="351" Column="28" TopLine="346"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
-  <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="cert.lpr"/>
-        <Line Value="411"/>
-      </Item1>
-    </BreakPoints>
-  </Debugging>
 </CONFIG>

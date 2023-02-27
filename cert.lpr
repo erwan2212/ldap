@@ -123,17 +123,17 @@ var
     pbEncodedUsage : LPBYTE=nil;
     cbEncodedName  : DWORD=0;
     cbEncodedPubKey: DWORD=0;
-    cbEncodedCert  : dword;
+    cbEncodedCert  : dword=0;
     cbEncodedUsage : dword= 0;
-    hUserProv      : HCRYPTPROV;
-    hUserKey       : PHCRYPTKEY;
+    hUserProv      : HCRYPTPROV=thandle(-1);
+    hUserKey       : HCRYPTKEY=thandle(-1);
     pbSerial       : array[0..0] of BYTE= (1);
     sysTime        : SYSTEMTIME;
     notBefore,
     notAfter       : FILETIME;
     pPubKeyInfo    : PCERT_PUBLIC_KEY_INFO=nil;
     signAlgo       : CRYPT_ALGORITHM_IDENTIFIER;
-    pszOID         : array[0..1] of LPSTR; //szOID_PKIX_KP_CLIENT_AUTH, szOID_PKIX_KP_EMAIL_PROTECTION;
+    pszOID         : array[0..2] of LPSTR; //szOID_PKIX_KP_CLIENT_AUTH, szOID_PKIX_KP_EMAIL_PROTECTION;
     enhKeyUsage    : wcrypt2.CERT_ENHKEY_USAGE; //2, pszOID;
     pExtensions    : array[0..0] of wcrypt2.CERT_EXTENSION; //= (szOID_ENHANCED_KEY_USAGE, TRUE, (0, NULL));
     dwError        : DWORD;
@@ -145,6 +145,7 @@ var
 
      pszOID[0]:=szOID_PKIX_KP_CLIENT_AUTH;
      pszOID[1]:=szOID_PKIX_KP_EMAIL_PROTECTION;
+     //pszOID[2]:=szOID_PKIX_KP_SERVER_AUTH;
 
      enhKeyUsage.cUsageIdentifier :=2;
      enhKeyUsage.rgpszUsageIdentifier :=@pszOID ;
@@ -302,7 +303,7 @@ var
                                      FILE_ATTRIBUTE_NORMAL,
                                      0);
            if hFile <> INVALID_HANDLE_VALUE then begin
-              WriteFile(hFile, pbEncodedCert, cbEncodedCert, dwWrittenBytes, nil);
+              WriteFile(hFile, pbEncodedCert^, cbEncodedCert, dwWrittenBytes, nil);
               CloseHandle(hFile);
               bStatus := TRUE;
            end
@@ -321,7 +322,7 @@ var
         writeln('CryptSignAndEncodeCertificate failed with error :'+inttostr(GetLastError));
      end;
   end_:
-     if hUserKey=nil then CryptDestroyKey(hUserKey^);
+     if hUserKey=thandle(-1) then CryptDestroyKey(hUserKey);
      if hUserProv=thandle(-1) then CryptReleaseContext(hUserProv, 0);
      if pPubKeyInfo=nil then FreeMem(pPubKeyInfo);
      if pbEncodedName=nil then FreeMem(pbEncodedName);
@@ -335,7 +336,8 @@ var
   function CreateCertificate( pCaContext:wcrypt2.PCCERT_CONTEXT;  szDN:LPCTSTR):BOOL;
 var
    bStatus:BOOL = FALSE;
-   hCaProv:PHCRYPTPROV = nil;
+   //hCaProv:PHCRYPTPROV = nil;
+   hCaProv:HCRYPTPROV = thandle(-1);
    hCaKey:HCRYPTKEY = thandle(-1);
    pKeyInfo:PCRYPT_KEY_PROV_INFO = nil;
    cbSize:DWORD = 0;
@@ -351,18 +353,18 @@ var
                                          pKeyInfo,
                                          @cbSize) then
       begin
-         if CryptAcquireContextW(hCaProv,
+         if CryptAcquireContextW(@hCaProv,
                                  pKeyInfo^.pwszContainerName,
                                  pKeyInfo^.pwszProvName,
                                  pKeyInfo^.dwProvType,
                                  pKeyInfo^.dwFlags) then
          begin
             bStatus := EncodeAndSignCertificate(pCaContext,
-                                    hCaProv^,
+                                    hCaProv,
                                     pKeyInfo^.dwKeySpec,
                                     szDN);
 
-            CryptReleaseContext(hCaProv^, 0);
+            CryptReleaseContext(hCaProv, 0);
          end
 
          else
@@ -371,13 +373,14 @@ var
 
 
       LocalFree(hlocal(pKeyInfo));
-      CryptReleaseContext(hCaProv^, 0);
+      CryptReleaseContext(hCaProv, 0);
    end;
 
 
    result:= bStatus;
 end;
 
+  //openssl x509 -inform DER -in usercert.cer -noout -text
   function DoCreateCertificate( storename:string):integer;
 var
   hStoreHandle      : HCERTSTORE=nil;
@@ -420,7 +423,7 @@ begin
       if  pCertContext=nil then writeln('No CA signing certificate found on the '+pszStoreName+' store.')
       else
       begin
-         if CreateCertificate(pCertContext, 'CN=Toto,E=toto@example.com') then
+         if CreateCertificate(pCertContext, 'CN=Toto8,E=toto@example.com') then
             writeln('Certificate created successfully.')
          else
             writeln('Failed to create a certificate.');
@@ -969,12 +972,11 @@ begin
 end;
 
 begin
-  //DoCreateCertificate('root');
-  //exit;
- //
+
   cmd := TCommandLineReader.create;
     cmd.declareflag ('export','');
     //cmd.declareflag ('import','');
+    cmd.declareflag ('mkcert','');
     cmd.declareflag ('enum','');
     cmd.declareflag ('delete','');
     cmd.declareString('store', 'certificate store','MY');
@@ -1011,6 +1013,9 @@ begin
       then if ImportCert(widestring(cmd.readstring('store')),cmd.readstring('filename'),widestring(cmd.readstring('password')))=true
            then writeln('ok') else writeln('nok');
    }
+
+     if cmd.existsProperty('mkcert')
+       then DoCreateCertificate (cmd.readstring('store'));
 
 end.
 
