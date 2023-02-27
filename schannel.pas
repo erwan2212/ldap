@@ -12,7 +12,7 @@ uses
 type
   ALG_ID = Cardinal;
 
-  HCERTSTORE = type THandle;
+  _HCERTSTORE = type THandle;
   HCRYPTMSG = type THandle;
   HCERTCHAINENGINE = type THandle;
   HCRYPTPROV = type THandle;
@@ -83,14 +83,14 @@ type
     pbCertEncoded :PBYTE;
     cbCertEncoded :DWORD;
     pCertInfo :PCERT_INFO;
-    hCertStore :HCERTSTORE;
+    hCertStore :_HCERTSTORE;
   end;
   PCCERT_CONTEXT = ^CERT_CONTEXT;
   SCHANNEL_CRED = record
     dwVersion: DWORD;
     cCreds: DWORD;
     paCred: ^PCCERT_CONTEXT;
-    hRootStore: HCERTSTORE;
+    hRootStore: _HCERTSTORE;
     cMappers: DWORD;
     aphMappers: Pointer;
     cSupportedAlgs: DWORD;
@@ -196,7 +196,7 @@ type
     pbCtlEncoded :PBYTE;
     cbCtlEncoded :DWORD;
     pCtlInfo :PCTL_INFO;
-    hCertStore :HCERTSTORE;
+    hCertStore :_HCERTSTORE;
     hCryptMsg :HCRYPTMSG;
     pbCtlContent :PBYTE;
     cbCtlContent :DWORD;
@@ -955,6 +955,8 @@ type
     pdwIssuerElementIndex: PDWORD;
   end;
 
+  {
+
 function CertNameToStr(
         dwCertEncodingType: DWORD;
   const pName: CERT_NAME_BLOB;
@@ -1014,6 +1016,7 @@ function CertFindChainInStore(
          pPrevChainContext:  PCCERT_CHAIN_CONTEXT): PCCERT_CHAIN_CONTEXT; stdcall; external 'crypt32.dll';
 
 function CertCloseStore(hCertStore :HCERTSTORE; dwFlags :DWORD):BOOL ; stdcall; external 'crypt32.dll';
+}
 
 implementation
 

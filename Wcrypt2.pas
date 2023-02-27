@@ -6880,7 +6880,7 @@ function CertStrToNameA(dwCertEncodingType :DWORD;
                         pvReserved :PVOID;
                         pbEncoded :PBYTE;
                         pcbEncoded :PDWORD;
-                     var ppszError :array of LPCSTR):BOOL ; stdcall;  {--max-- iniziato qui}
+                     {var ppszError :array of LPCSTR}ppszError:pointer):BOOL ; stdcall;  {--max-- iniziato qui}
 //+-------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 function CertStrToNameW(dwCertEncodingType :DWORD;
