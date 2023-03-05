@@ -24,10 +24,10 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="--import --store=&quot;MY&quot; --filename=&quot;export.pfx&quot; --password=&quot;password&quot;"/>
+        <CommandLineParams Value="--mkcert --store=root"/>
       </local>
     </RunParams>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="cert.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -41,6 +41,11 @@
         <Filename Value="..\rcmdline-master\rcmdline.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="cryptutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CryptUtils"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
