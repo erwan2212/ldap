@@ -401,7 +401,7 @@ begin
                        PWideChar(WidePass),
                        nil,
                        EXPORT_PRIVATE_KEYS +
-                       //REPORT_NOT_ABLE_TO_EXPORT_PRIVATE_KEY +
+                       REPORT_NOT_ABLE_TO_EXPORT_PRIVATE_KEY + //comment if you still want to export cert without pvk
                        //REPORT_NO_PRIVATE_KEY +
                        PKCS12_INCLUDE_EXTENDED_PROPERTIES)=false then
                        begin

