@@ -31,7 +31,7 @@ begin
   //(userAccountControl:1.2.840.113556.1.4.803:=65536) - never expires
   //(userAccountControl:1.2.840.113556.1.4.803:=2) - disabled accounts
   cmd.declarestring('query', '(&(objectClass=user)(mail=user1@home.lab))');
-  //cmd.declarestring('certenum', 'MY|ROOT');
+
   cmd.declarestring('attr', 'optional, ex:samaccountname, if empty->cn');
   cmd.declarestring('mode', 'optional, simple|winnt','simple');
   cmd.declareint('debug', 'optional, 1->verbose',0);
