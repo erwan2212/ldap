@@ -84,7 +84,7 @@ var
     ppKey:_ppkey = nil;
     dwFlags_:dword=0;
   begin
-    p:=@d;
+    //p:=@d;
     //will display the address of the iptrValue variable,
     //then the address stored in that variable,
     //and then the value stored at that address

@@ -310,14 +310,13 @@ begin
               end;
          end;
 
-  pCert := CertFindCertificateInStore(pStore,
+      pCert := CertFindCertificateInStore(pStore,
                                       X509_ASN_ENCODING or PKCS_7_ASN_ENCODING,
                                       0,
                                       CERT_FIND_SHA1_HASH,
                                       @Hash,
                                       nil);
-
-  end;
+    end; //if sha1<>'' then
 
     if subject<>'' then
     begin
@@ -330,7 +329,7 @@ begin
                                       CERT_FIND_SUBJECT_STR_A ,//CERT_FIND_SUBJECT_STR CERT_FIND_SUBJECT_NAME
                                       @Buffer[0],
                                       nil);
-    end;
+    end; //if subject<>'' then
 
     if pcert=nil then
      begin
