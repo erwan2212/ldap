@@ -421,6 +421,7 @@ const
   PP_DELETEKEY           = 24;
 
   PROV_RSA_FULL          = 1;
+  PROV_RSA_AES           = 24;
   PROV_RSA_SIG           = 2;
   PROV_DSS               = 3;
   PROV_FORTEZZA          = 4;

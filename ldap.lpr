@@ -1,7 +1,7 @@
 program ldap;
 
 uses windows,sysutils,classes,strutils,base64,
-     ldaputils,winldap,
+     ldaputils,winldap,wcrypt2,
      uriparser,
      rcmdline in '..\rcmdline-master\rcmdline.pas';
 
@@ -12,6 +12,70 @@ var
   i:integer;
   URI: TURI;
   cmd: TCommandLineReader;
+
+  id:alg_id;
+  r:bool;
+  hp:HCRYPTPROV=0;
+  hh:HCRYPTHASH=0;
+  len:dword=0;
+  //hash:array[0..63] of byte;
+  hash:array of byte;
+
+  procedure log(msg:string);
+  begin
+    writeln(msg);
+  end;
+
+  function crypto_hash(algid:alg_id;data:LPCVOID;dataLen:DWORD;  hash:lpvoid;hashWanted:DWORD):boolean;
+  var
+          status:BOOL {$ifdef fpc}=FALSE{$endif fpc};
+    	hProv:HCRYPTPROV;
+    	hHash:HCRYPTHASH;
+    	hashLen:DWORD;
+    	buffer:PBYTE;
+    	//PKERB_CHECKSUM pCheckSum;
+    	Context:PVOID;
+  begin
+  log('**** crypto_hash ****');
+    //writeln(inttohex(CALG_SHA1,4));writeln(inttohex(CALG_MD4,4));writeln(inttohex(CALG_MD5,4));
+    log('datalen:'+inttostr(datalen));
+    result:=false;
+    if CryptAcquireContext(@hProv, nil, nil, PROV_RSA_AES, CRYPT_VERIFYCONTEXT) then
+    	begin
+          log('CryptAcquireContext OK');
+    		if CryptCreateHash(hProv, algid, 0, 0, @hHash) then
+    		begin
+                  log('CryptCreateHash OK');
+    			if CryptHashData(hHash, data, dataLen, 0) then
+    			begin
+                          log('CryptHashData OK');
+    				if CryptGetHashParam(hHash, HP_HASHVAL, nil, @hashLen, 0) then
+    				begin
+                                  log('CryptGetHashParam OK:'+inttostr(hashLen));
+                                  buffer:=Pointer(LocalAlloc(LPTR, hashLen));
+    					if buffer<>nil  then
+    					begin
+                                          log('LocalAlloc OK');
+    						result := CryptGetHashParam(hHash, HP_HASHVAL, buffer, @hashLen, 0);
+                                                  log('CryptGetHashParam:'+BoolToStr(result,true));
+                                                  //RtlCopyMemory(pointer(hash), buffer, min(hashLen, hashWanted));
+                                                  log('hashLen:'+inttostr(hashLen));
+                                                  log('hashWanted:'+inttostr(hashWanted));
+                                                  //log(inttohex(hHash,sizeof(pointer)));
+                                                  CopyMemory (hash, buffer, min(hashLen, hashWanted));
+                                                  //log('HASH:'+ByteToHexaString (buffer^),1);
+                                                  //
+                                                  LocalFree(thandle(buffer));
+    					end;//if(buffer = (PBYTE) LocalAlloc(LPTR, hashLen))
+    				end; //CryptGetHashParam
+    			end; //CryptHashData
+    			CryptDestroyHash(hHash);
+    		end; //CryptCreateHash
+    		CryptReleaseContext(hProv, 0);
+          end; //CryptAcquireContext
+          log('**** crypto_hash:'+BoolToStr (result)+' ****');
+  end;
+
 
 //ldap.exe
 //--connect="ldap://WIN-BBC4BS466Q5.home.lab:636/dc=home,dc=lab"
@@ -41,6 +105,8 @@ begin
 
   cmd.declarestring('changeattr', 'CN=Administrator,CN=Users,DC=home,DC=lab');
   cmd.declarestring('value', 'password');
+
+  cmd.declarestring('hash', 'optional nthash|md5|md4|md2|sha1|sha256|sha384|sha512');
 
   cmd.parse(cmdline);
   //writeln(booltostr(cmd.existsProperty('user')));
@@ -83,6 +149,57 @@ begin
         //output:password needs to be decoded from base64 then xor'ed
         //writeln(EncodeStringBase64(XorString ('666','passwordxxxx')));
         password:=widestring(Xorstring('666',DecodeStringBase64(ansistring(password))));
+        end;
+
+        if cmd.existsProperty('hash')=true then
+        begin
+
+        if uppercase(cmd.readString('hash'))='SHA512' then id:=$0000800e;
+        if uppercase(cmd.readString('hash'))='SHA256' then id:=$0000800c;
+        if uppercase(cmd.readString('hash'))='SHA384' then id:=$0000800d;
+        if uppercase(cmd.readString('hash'))='SHA1' then id:=$00008004;
+        if uppercase(cmd.readString('hash'))='MD5' then id:=$00008003;
+        if uppercase(cmd.readString('hash'))='MD4' then id:=$00008002;
+        if uppercase(cmd.readString('hash'))='NTHASH' then id:=$00008002;
+        if uppercase(cmd.readString('hash'))='MD2' then id:=$00008001;
+
+
+
+        // acquire a crypto context
+        //PROV_RSA_AES    // prov_rsa_full
+        // if(id == CALG_MD2 || id == CALG_MD4 || id == CALG_MD5) ...
+        r:=CryptAcquireContext(@hp, nil, nil,PROV_RSA_AES, CRYPT_VERIFYCONTEXT);
+        if r=false then writeln('CryptAcquireContext failed');
+        // create a hash object
+        r:= CryptCreateHash(hp, id, 0, 0, @hh);
+        if r=false then writeln('CryptCreateHash failed');
+        // update hash object
+        if cmd.readString('hash')='NTHASH'
+           then r:= CryptHashData(hh, @password[1], length(password)*2, 0)
+           else r:= CryptHashData(hh, @string(password)[1], length(password), 0);
+        if r=false then writeln('CryptHashData failed');
+        //
+        fillchar(hash,sizeof(hash),0);
+        r:=CryptGetHashParam(hh, HP_HASHVAL, nil, @len, 0);
+        //writeln(len);
+        setlength(hash,len);
+        r:=CryptGetHashParam(hh, HP_HASHVAL, @hash[0], @len, 0);
+        if r=false then writeln('CryptGetHashParam failed');
+
+        //writeln(password);
+        password:='';
+        for i:=0 to len -1 do password:=password+(inttohex(ord(hash[i]),2));
+        //writeln(password);
+
+        CryptDestroyHash(hh);
+        CryptReleaseContext(hp, 0);
+
+
+        {
+        crypto_hash(id,@string(password)[1],length(password) ,@hash[0],16);
+        for i:=0 to 16 -1 do write(inttohex(ord(hash[i]),2)+' ');
+                writeln;
+        }
         end;
 
   //
